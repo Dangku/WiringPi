@@ -111,7 +111,7 @@ static int authenticate (int fd, const char *pass)
 
   snprintf (salted, 1024, "$6$%s$", challenge) ;
   encrypted = crypt (pass, salted) ;
-
+  
 // This is an assertion, or sanity check on my part...
 //	The '20' comes from the $6$ then the 16 characters of the salt,
 //	then the terminating $.

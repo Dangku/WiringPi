@@ -118,7 +118,8 @@ static char *findExecutable (const char *progName)
 	int i = 0 ;
 	struct stat statBuf ;
 
-	for (i = 0 ; searchPath [i] != NULL ; ++i) {
+	for (i = 0 ; searchPath [i] != NULL ; ++i)
+	{
 		path = malloc (strlen (searchPath [i]) + len + 2) ;
 		sprintf (path, "%s/%s", searchPath [i], progName) ;
 
@@ -141,12 +142,12 @@ static void changeOwner (char *cmd, char *file)
 	uid_t uid = getuid () ;
 	uid_t gid = getgid () ;
 
-	if (chown (file, uid, gid) != 0) {
+	if (chown (file, uid, gid) != 0)
+	{
 		// Removed (ignoring) the check for not existing as I'm fed-up with morons telling me that
 		//	the warning message is an error.
 		if (errno != ENOENT)
-			fprintf (stderr, "%s: Unable to change ownership of %s: %s\n",
-				cmd, file, strerror (errno)) ;
+			fprintf (stderr, "%s: Unable to change ownership of %s: %s\n", cmd, file, strerror (errno)) ;
 	}
 }
 
@@ -160,12 +161,11 @@ static void checkDevTree (char *argv [])
 	struct stat statBuf ;
 
 	// We're on a devtree system ...
-	if (stat ("/proc/device-tree", &statBuf) == 0) {
+	if (stat ("/proc/device-tree", &statBuf) == 0)
+	{
 		fprintf (stderr,
 			"%s: Unable to load/unload modules as this kernel has the device tree enabled.\n"
-			"    You need to edit /etc/modprobe.d/blacklist-odroid.conf or update /media/models.dts file.\n"
-			"    If you want to use SPI, you should find out spidev module line at the blacklist-odroid.conf\n"
-			"    and uncomment that. Then reboot to enable the module.\n\n"
+			"    You need to edit /etc/modules or update board.dts file.\n\n"
 			"    Please refer to our wiki page:\n"
 			"      https://wiki.banana-pi.org\n", argv [0]) ;
 		exit (1) ;
@@ -201,60 +201,29 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 
 	piBoardId(&model, &rev, &mem, &maker, &overVolted);
 
-	switch (model) {
-	case MODEL_ODROID_C1:
-	case MODEL_ODROID_C2:
-		if (cmpKernelVersion(KERN_NUM_TO_MAJOR, 4))
+	switch (model)
+	{
+		case MODEL_BANANAPI_M5:
+		case MODEL_BANANAPI_M2PRO:
 			port = 0;
-		else
-			port = 1;
-		break;
-	case MODEL_ODROID_XU3:
-		if (cmpKernelVersion(KERN_NUM_TO_MAJOR, 5))
-			port = 0;
-		else
-			port = 1;
-		break;
-	case MODEL_ODROID_N1:
-		port = 4;
-		break;
-	case MODEL_ODROID_N2:
-	case MODEL_ODROID_C4:
-	case MODEL_ODROID_HC4:
-	case MODEL_BANANAPI_M5:
-	case MODEL_BANANAPI_M2PRO:
-		if (cmpKernelVersion(KERN_NUM_TO_REVISION, 4, 9, 230))
-			port = 0;
-		else
+			break;
+		case MODEL_BANANAPI_M2S:
+		case MODEL_BANANAPI_CM4:
+		case MODEL_BANANAPI_RPICM4:
 			port = 2;
-		break;
-	case MODEL_BANANAPI_M2S:
-	case MODEL_BANANAPI_CM4:
-	case MODEL_BANANAPI_RPICM4:
-		port = 2;
-		break;
-	case MODEL_BANANAPI_CM5IO:
-	case MODEL_BANANAPI_CM5BPICM4IO:
-		port = 5;
-		break;
-	default:
-		break;
+			break;
+		case MODEL_BANANAPI_CM5IO:
+		case MODEL_BANANAPI_CM5BPICM4IO:
+			port = 5;
+			break;
+		default:
+			break;
 	}
 
-	if ((c = findExecutable (I2CDETECT)) == NULL) {
+	if ((c = findExecutable (I2CDETECT)) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to find i2cdetect command: %s\n", argv [0], strerror (errno)) ;
 		return ;
-	}
-
-	switch (model) {
-	case MODEL_ODROID_C1:
-	case MODEL_ODROID_C2:
-		if (!moduleLoaded (AML_MODULE_I2C)) {
-			fprintf (stderr, "%s: The I2C kernel module(s) are not loaded.\n", argv [0]) ;
-		}
-		break;
-	default:
-		break;
 	}
 
 	command = malloc (strlen (c) + 16) ;
@@ -277,13 +246,15 @@ static void doExports (UNU int argc, UNU char *argv [])
 	char buf [16] ;
 
 	// Crude, but effective
-	for (first = 0, i = 0 ; i < 256 ; ++i) {
+	for (first = 0, i = 0 ; i < 256 ; ++i)
+	{
 		// Try to read the direction
 		sprintf (fName, "/sys/class/gpio/gpio%d/direction", i) ;
 		if ((fd = open (fName, O_RDONLY)) == -1)
 			continue ;
 
-		if (first == 0) {
+		if (first == 0)
+		{
 			++first ;
 			printf ("GPIO Pins exported:\n") ;
 		}
@@ -300,7 +271,8 @@ static void doExports (UNU int argc, UNU char *argv [])
 
 		// Try to Read the value
 		sprintf (fName, "/sys/class/gpio/gpio%d/value", i) ;
-		if ((fd = open (fName, O_RDONLY)) == -1) {
+		if ((fd = open (fName, O_RDONLY)) == -1)
+		{
 			printf ("No Value file (huh?)\n") ;
 			continue ;
 		}
@@ -316,7 +288,8 @@ static void doExports (UNU int argc, UNU char *argv [])
 
 		// Read any edge trigger file
 		sprintf (fName, "/sys/class/gpio/gpio%d/edge", i) ;
-		if ((fd = open (fName, O_RDONLY)) == -1) {
+		if ((fd = open (fName, O_RDONLY)) == -1)
+		{
 			printf ("\n") ;
 			continue ;
 		}
@@ -346,7 +319,8 @@ void doExport (int argc, char *argv [])
 	char *mode ;
 	char fName [128] ;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s export pin mode\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -354,7 +328,8 @@ void doExport (int argc, char *argv [])
 	pin  = atoi (argv [2]) ;
 	mode = argv [3] ;
 
-	if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL) {
+	if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO export interface: %s\n", argv [0], strerror (errno)) ;
 		exit (1) ;
 	}
@@ -363,7 +338,8 @@ void doExport (int argc, char *argv [])
 	fclose (fd) ;
 
 	sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
-	if ((fd = fopen (fName, "w")) == NULL) {
+	if ((fd = fopen (fName, "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
 		exit (1) ;
 	}
@@ -376,7 +352,8 @@ void doExport (int argc, char *argv [])
 		fprintf (fd, "high\n") ;
 	else if ((strcasecmp (mode, "low")  == 0) || (strcasecmp (mode, "down")   == 0))
 		fprintf (fd, "low\n") ;
-	else {
+	else
+	{
 		fprintf (stderr, "%s: Invalid mode: %s. Should be in, out, high or low\n", argv [1], mode) ;
 		exit (1) ;
 	}
@@ -400,13 +377,15 @@ void doExport (int argc, char *argv [])
  *	to exit the program. Crude but effective.
  *********************************************************************************
  */
-static void wfi (void)	{ exit (0) ; }
+static void wfi (void)
+	{ exit (0) ; }
 
 void doWfi (int argc, char *argv [])
 {
 	int pin, mode ;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s wfi pin mode\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -416,12 +395,14 @@ void doWfi (int argc, char *argv [])
 	if      (strcasecmp (argv [3], "rising")  == 0)	mode = INT_EDGE_RISING ;
 	else if (strcasecmp (argv [3], "falling") == 0)	mode = INT_EDGE_FALLING ;
 	else if (strcasecmp (argv [3], "both")    == 0)	mode = INT_EDGE_BOTH ;
-	else {
+	else
+	{
 		fprintf (stderr, "%s: wfi: Invalid mode: %s. Should be rising, falling or both\n", argv [1], argv [3]) ;
 		exit (1) ;
 	}
 
-	if (wiringPiISR (pin, mode, &wfi) < 0) {
+	if (wiringPiISR (pin, mode, &wfi) < 0)
+	{
 		fprintf (stderr, "%s: wfi: Unable to setup ISR: %s\n", argv [1], strerror (errno)) ;
 		exit (1) ;
 	}
@@ -449,7 +430,8 @@ void doEdge (int argc, char *argv [])
 	// Reset gpio sysfs
 	doUnexport(3, argv);
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s edge pin mode\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -458,7 +440,8 @@ void doEdge (int argc, char *argv [])
 	mode = argv [3] ;
 
 	// Export the pin and set direction to input
-	if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL) {
+	if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO export interface: %s\n", argv [0], strerror (errno)) ;
 		exit (1) ;
 	}
@@ -466,7 +449,8 @@ void doEdge (int argc, char *argv [])
 	fclose (fd) ;
 
 	sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
-	if ((fd = fopen (fName, "w")) == NULL) {
+	if ((fd = fopen (fName, "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
 		exit (1) ;
 	}
@@ -474,7 +458,8 @@ void doEdge (int argc, char *argv [])
 	fclose (fd) ;
 
 	sprintf (fName, "/sys/class/gpio/gpio%d/edge", pin) ;
-	if ((fd = fopen (fName, "w")) == NULL) {
+	if ((fd = fopen (fName, "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO edge interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
 		exit (1) ;
 	}
@@ -483,7 +468,8 @@ void doEdge (int argc, char *argv [])
 	else if (strcasecmp (mode, "rising")  == 0)	fprintf (fd, "rising\n") ;
 	else if (strcasecmp (mode, "falling") == 0)	fprintf (fd, "falling\n") ;
 	else if (strcasecmp (mode, "both")    == 0)	fprintf (fd, "both\n") ;
-	else {
+	else
+	{
 		fprintf (stderr, "%s: Invalid mode: %s. Should be none, rising, falling or both\n", argv [1], mode) ;
 		exit (1) ;
 	}
@@ -511,14 +497,16 @@ void doUnexport (int argc, char *argv [])
 	FILE *fd ;
 	int pin ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s unexport pin\n", argv [0]) ;
 		exit (1) ;
 	}
 
 	pin = atoi (argv [2]) ;
 
-	if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL) {
+	if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
+	{
 		fprintf (stderr, "%s: Unable to open GPIO export interface\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -541,8 +529,10 @@ void doUnexportall (char *progName)
 	FILE *fd ;
 	int pin ;
 
-	for (pin = 0 ; pin < 256 ; ++pin) {
-		if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL) {
+	for (pin = 0 ; pin < 256 ; ++pin)
+	{
+		if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
+		{
 			fprintf (stderr, "%s: Unable to open GPIO export interface\n", progName) ;
 			exit (1) ;
 		}
@@ -562,7 +552,8 @@ void doMode (int argc, char *argv [])
 	int pin ;
 	char *mode ;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s mode pin mode\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -579,7 +570,8 @@ void doMode (int argc, char *argv [])
 	else if (strcasecmp (mode, "down")    == 0) pullUpDnControl (pin, PUD_DOWN) ;
 	else if (strcasecmp (mode, "tri")     == 0) pullUpDnControl (pin, PUD_OFF) ;
 	else if (strcasecmp (mode, "off")     == 0) pullUpDnControl (pin, PUD_OFF) ;
-	else {
+	else
+	{
 		fprintf (stderr, "%s: Invalid mode: %s. Should be in/out/pwm/clock/up/down/tri\n", argv [1], mode) ;
 		exit (1) ;
 	}
@@ -588,7 +580,7 @@ void doMode (int argc, char *argv [])
 
 /*
  * doDrive:
- *	gpio drive pin value for ODROIDs since it depends on the SoC
+ *	gpio drive pin value for Bananapi since it depends on the SoC
  *********************************************************************************
  */
 
@@ -596,7 +588,8 @@ static void doDrive (int argc, char *argv [])
 {
 	int pin, val;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s drive pin value\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -617,7 +610,8 @@ static void doWrite (int argc, char *argv [])
 {
 	int pin, val ;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s write pin value\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -647,7 +641,8 @@ static void doWriteByte (int argc, char *argv [])
 {
 	int val ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s wb value\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -667,7 +662,8 @@ static void doReadByte (int argc, char *argv [], int printHex)
 {
 	int val ;
 
-	if (argc != 2) {
+	if (argc != 2)
+	{
 		fprintf (stderr, "Usage: %s rbx|rbd\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -690,7 +686,8 @@ void doRead (int argc, char *argv [])
 {
 	int pin, val ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s read pin\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -709,7 +706,8 @@ void doRead (int argc, char *argv [])
 
 void doAread (int argc, char *argv [])
 {
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s aread pin\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -727,7 +725,8 @@ void doToggle (int argc, char *argv [])
 {
 	int pin ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s toggle pin\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -747,7 +746,8 @@ void doBlink (int argc, char *argv [])
 {
 	int pin ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s blink pin\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -755,7 +755,8 @@ void doBlink (int argc, char *argv [])
 	pin = atoi (argv [2]) ;
 
 	pinMode (pin, OUTPUT) ;
-	for (;;) {
+	for (;;)
+	{
 		digitalWrite (pin, !digitalRead (pin)) ;
 		delay (500) ;
 	}
@@ -771,7 +772,8 @@ void doPwm (int argc, char *argv [])
 {
 	int pin, val ;
 
-	if (argc != 4) {
+	if (argc != 4)
+	{
 		fprintf (stderr, "Usage: %s pwm <pin> <value>\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -792,14 +794,16 @@ static void doPwmRange (int argc, char *argv [])
 {
 	unsigned int range ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s pwmr <range>\n", argv [0]) ;
 		exit (1) ;
 	}
 
 	range = (unsigned int)strtoul (argv [2], NULL, 10) ;
 
-	if (range == 0) {
+	if (range == 0)
+	{
 		fprintf (stderr, "%s: range must be > 0\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -810,14 +814,16 @@ static void doPwmClock (int argc, char *argv [])
 {
 	unsigned int clock ;
 
-	if (argc != 3) {
+	if (argc != 3)
+	{
 		fprintf (stderr, "Usage: %s pwmc <clock>\n", argv [0]) ;
 		exit (1) ;
 	}
 
 	clock = (unsigned int)strtoul (argv [2], NULL, 10) ;
 
-	if ((clock < 1) || (clock > 4095)) {
+	if ((clock < 1) || (clock > 4095))
+	{
 		fprintf (stderr, "%s: clock must be between 0 and 4096\n", argv [0]) ;
 		exit (1) ;
 	}
@@ -842,19 +848,19 @@ static void doVersion (char *argv [])
 
 	wiringPiVersion (&vMaj, vMin) ;
 	printf ("gpio version: %d.%s\n", vMaj, *vMin) ;
-	printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Hardkernel Co., Ltd.\n") ;
+	printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Bananapi.\n") ;
 	printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
 	printf ("For details type: %s -warranty\n", argv [0]) ;
 	printf ("\n") ;
 	piBoardId (&model, &rev, &mem, &maker, &warranty) ;
 
-	printf ("ODROID Board Details:\n") ;
+	printf ("Bananapi Board Details:\n") ;
 	printf ("  Type: %s, Revision: %s, Memory: %dMB\n" \
 	        "  Maker: %s, Chip-Vendor: %s\n",
 		piModelNames [model],
 		piRevisionNames [rev],
 		piMemorySize [mem],
-		"Hardkernel",
+		"Bananapi",
 		piMakerNames [maker]);
 
 	// Show current kernel version
@@ -865,12 +871,14 @@ static void doVersion (char *argv [])
 		printf ("  * Device tree is enabled.\n") ;
 
 	// Output Kernel idea of board type
-	if (stat ("/proc/device-tree/model", &statBuf) == 0) {
-		if ((fd = fopen ("/proc/device-tree/model", "r")) != NULL) {
+	if (stat ("/proc/device-tree/model", &statBuf) == 0)
+	{
+		if ((fd = fopen ("/proc/device-tree/model", "r")) != NULL)
+		{
 			if (fgets (name, 80, fd) == NULL)
 				fprintf(stderr, "Unable to read from the file descriptor: %s \n", strerror(errno));
 			fclose (fd) ;
-			printf ("  *--> %s\n", name) ;
+			printf ("  * %s\n", name) ;
 		}
 	}
 
@@ -893,38 +901,44 @@ int main (int argc, char *argv [])
 	int i ;
 	struct stat statBuf ;
 
-	if (getenv ("WIRINGPI_DEBUG") != NULL) {
+	if (getenv ("WIRINGPI_DEBUG") != NULL)
+	{
 		printf ("gpio: wiringPi debug mode enabled\n") ;
 		wiringPiDebug = TRUE ;
 	}
 
-	if (argc == 1) {
+	if (argc == 1)
+	{
 		fprintf (stderr, "%s\n", usage) ;
 		return 1 ;
 	}
 
 	// Help
-	if (strcasecmp (argv [1], "-h") == 0) {
+	if (strcasecmp (argv [1], "-h") == 0)
+	{
 		printf ("%s: %s\n", argv [0], usage) ;
 		return 0 ;
 	}
 
 	// Version & Warranty
 	//	Wish I could remember why I have both -R and -V ...
-	if ((strcmp (argv [1], "-R") == 0) || (strcmp (argv [1], "-V") == 0)) {
+	if ((strcmp (argv [1], "-R") == 0) || (strcmp (argv [1], "-V") == 0))
+	{
 		printf ("%d\n", piGpioLayout ()) ;
 		return 0 ;
 	}
 
 	// Version and information
-	if (strcmp (argv [1], "-v") == 0) {
+	if (strcmp (argv [1], "-v") == 0)
+	{
 		doVersion (argv) ;
 		return 0 ;
 	}
 
-	if (strcasecmp (argv [1], "-warranty") == 0) {
+	if (strcasecmp (argv [1], "-warranty") == 0)
+	{
 		printf ("gpio version: %s\n", VERSION) ;
-		printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Hardkernel Co., Ltd.\n") ;
+		printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Bananapi.\n") ;
 		printf ("\n") ;
 		printf ("    This program is free software; you can redistribute it and/or modify\n") ;
 		printf ("    it under the terms of the GNU Leser General Public License as published\n") ;
@@ -942,7 +956,8 @@ int main (int argc, char *argv [])
 		return 0 ;
 	}
 
-	if (geteuid () != 0 && stat("/dev/gpiomem", &statBuf) != 0) {
+	if (geteuid () != 0 && stat("/dev/gpiomem", &statBuf) != 0)
+	{
 		fprintf (stderr, "%s: Must be root to run. Program should be suid root. This is an error.\n", argv [0]) ;
 		return 1 ;
 	}
@@ -959,37 +974,57 @@ int main (int argc, char *argv [])
 	if (strcasecmp (argv [1], "unload" ) == 0)	{ doUnLoad (argc, argv) ; return 0 ; }
 
 	// Check for allreadall command, force Gpio mode
-	if (strcasecmp (argv [1], "allreadall") == 0) {
+	if (strcasecmp (argv [1], "allreadall") == 0)
+	{
 		wiringPiSetupGpio () ;
 		doAllReadall      () ;
 		return 0 ;
 	}
 
-	if (strcasecmp (argv [1], "-g") == 0) {		// Check for -g argument
+// Check for -g argument
+
+	if (strcasecmp (argv [1], "-g") == 0)
+	{
 		wiringPiSetupGpio () ;
 
 		for (i = 2 ; i < argc ; ++i)
 			argv [i - 1] = argv [i] ;
 		--argc ;
 		wpMode = MODE_GPIO ;
-	} else if (strcasecmp (argv [1], "-1") == 0) {	// Check for -1 argument
+
+// Check for -1 argument
+
+	}
+	else if (strcasecmp (argv [1], "-1") == 0)
+	{
 		wiringPiSetupPhys () ;
 
 		for (i = 2 ; i < argc ; ++i)
 			argv [i - 1] = argv [i] ;
 		--argc ;
 		wpMode = MODE_PHYS ;
-	} else if (strcasecmp (argv [1], "-z") == 0) {	// Check for -z argument so we don't actually initialise wiringPi
+
+// Check for -z argument so we don't actually initialise wiringPi
+
+	}
+	else if (strcasecmp (argv [1], "-z") == 0)
+	{
 		for (i = 2 ; i < argc ; ++i)
 			argv [i - 1] = argv [i] ;
 		--argc ;
 		wpMode = MODE_UNINITIALISED ;
-	} else {					// Default to wiringPi mode
+	}
+
+// Default to wiringPi mode
+
+	else
+	{
 		wiringPiSetup () ;
 		wpMode = MODE_PINS ;
 	}
 
-	if (argc <= 1) {
+	if (argc <= 1)
+	{
 		fprintf (stderr, "%s: no command given\n", argv [0]) ;
 		exit (EXIT_FAILURE) ;
 	}
@@ -1008,7 +1043,7 @@ int main (int argc, char *argv [])
 	// Pi Specifics
 	else if (strcasecmp (argv [1], "pwmr"     ) == 0) doPwmRange   (argc, argv) ;
 	else if (strcasecmp (argv [1], "pwmc"     ) == 0) doPwmClock   (argc, argv) ;
-	else if (strcasecmp (argv [1], "drive"    ) == 0) doDrive   (argc, argv) ;
+	else if (strcasecmp (argv [1], "drive"    ) == 0) doDrive      (argc, argv) ;
 	else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    (argc, argv) ;
 	else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    (argc, argv) ;
 	else if (strcasecmp (argv [1], "i2cdetect") == 0) doI2Cdetect  (argc, argv) ;
@@ -1017,7 +1052,8 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1], "rbx"      ) == 0) doReadByte   (argc, argv, TRUE) ;
 	else if (strcasecmp (argv [1], "rbd"      ) == 0) doReadByte   (argc, argv, FALSE) ;
 	else if (strcasecmp (argv [1], "wfi"      ) == 0) doWfi        (argc, argv) ;
-	else {
+	else
+	{
 		fprintf (stderr, "%s: Unknown command: %s.\n", argv [0], argv [1]) ;
 		exit (EXIT_FAILURE) ;
 	}

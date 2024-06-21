@@ -84,8 +84,8 @@ endif
 .PHONY:	install-deb
 install-deb:	gpio
 	$Q echo "[Install: deb]"
-	$Q install -m 0755 -d		$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/bin
-	$Q install -m 0755 gpio		$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/bin
+	$Q install -m 0755 -d		$(DEBTEMPDIR)/debian-template/wiringPi/usr/bin
+	$Q install -m 0755 gpio		$(DEBTEMPDIR)/debian-template/wiringPi/usr/bin
 	$Q install -m 0755 -d		$(DEBTEMPDIR)/debian-template/wiringPi/usr/share/man/man1
 	$Q install -m 0644 gpio.1	$(DEBTEMPDIR)/debian-template/wiringPi/usr/share/man/man1
 

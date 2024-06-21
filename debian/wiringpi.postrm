@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
 	purge)
-		rm -f /etc/udev/rules.d/99-odroid-wiringpi-*
+		rm -f /etc/udev/rules.d/99-wiringpi-*
 	;;
 
 	remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

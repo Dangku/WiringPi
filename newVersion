@@ -30,4 +30,18 @@ vMaj=`cut -d. -f1 VERSION`
 vMin=`cut -d. -f2 VERSION`
 echo "#define VERSION \"`cat VERSION`\"" > version.h
 echo "#define VERSION_MAJOR $vMaj"		>> version.h
-echo "#define VERSION_MINOR \"$vMin\""		>> version.h
+echo "#define VERSION_MINOR $vMin"		>> version.h
+
+rm -f debian-template/wiringPi/DEBIAN/control
+cat > debian-template/wiringPi/DEBIAN/control <<EOF
+Package: wiringpi
+Version: `cat VERSION`
+Section: libraries
+Priority: optional
+Architecture: arm64
+Depends: libc6
+Maintainer: Dangku <dangku@sinovoip.com>
+Description: The wiringPi libraries, headers and gpio command
+  Libraries to allow GPIO access on a Bananapi from C and C++
+  and BASIC programs as well as from the command-line
+EOF

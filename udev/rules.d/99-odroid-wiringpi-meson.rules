@@ -1,2 +1,0 @@
-# /dev/gpiomem
-SUBSYSTEM=="meson-gpiomem", GROUP="odroid", MODE="0660"

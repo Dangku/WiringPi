@@ -1,2 +1,0 @@
-# /dev/gpiomem
-SUBSYSTEM=="exynos-gpiomem", GROUP="odroid", MODE="0660"

@@ -1,13 +1,9 @@
 /*----------------------------------------------------------------------------*/
 /*
 
-	WiringPi Library for ODROIDs
+	WiringPi Library for Bananapi
 
  */
-/*----------------------------------------------------------------------------*/
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -29,50 +25,29 @@
 #include <sys/utsname.h>
 #include <asm/ioctl.h>
 
-/*----------------------------------------------------------------------------*/
 #include "softPwm.h"
 #include "softTone.h"
 
-/*----------------------------------------------------------------------------*/
 #include "wiringPi.h"
 #include "../version.h"
 
-/*----------------------------------------------------------------------------*/
-#include "odroidc1.h"
-#include "odroidc2.h"
-#include "odroidxu3.h"
-#include "odroidn1.h"
-#include "odroidn2.h"
-#include "odroidc4.h"
 #include "bananapim5.h"
 #include "bananapim2s.h"
 #include "bananapicm4.h"
 #include "bananapirpicm4.h"
 #include "bananapicm5io.h"
 
-/*----------------------------------------------------------------------------*/
 // Const string define
-/*----------------------------------------------------------------------------*/
 const char *piModelNames [16] =
 {
-	// These names must be full name of the board.
-	// And, the model name on the target board has to be a part of an item of the array.
-	// e.g, ODROID-C or ODROID-XU3/4 may not be used for recognizing a board.
-	"Unknown",
-	"ODROID-C1/C1+",
-	"ODROID-C2",
-	"ODROID-XU3/XU4",
-	"ODROID-N1",
-	"ODROID-N2/N2Plus",
-	"ODROID-C4",
-	"ODROID-HC4",
-	"BPI-M5",
-	"BPI-M2-Pro",
-	"BPI-M2S",
-	"BPI-CM4",
-	"BPI-RPICM4",
-	"BPI-CM5IO",
-	"BPI-CM5-BPICM4IO",
+	"Unknown",		// 0
+	"BPI-M5",		// 1
+	"BPI-M2-Pro",	// 2
+	"BPI-M2S",		// 3 
+	"BPI-CM4",		// 4
+	"BPI-RPICM4",	// 5
+	"BPI-CM5IO",	// 6
+	"BPI-CM5-BPICM4IO",		// 7
 };
 
 const char *piRevisionNames [16] =
@@ -99,8 +74,8 @@ const char *piMakerNames [16] =
 {
 	"Unknown",	// 0
 	"Amlogic",	// 1
-	"Samsung",	// 2
-	"Rockchip",	// 3
+	"Unknown02",	// 2
+	"Unknown03",	// 3
 	"Unknown04",	// 4
 	"Unknown05",	// 5
 	"Unknown06",	// 6
@@ -127,26 +102,16 @@ const int piMemorySize [8] =
 	0,		//	 7
 } ;
 
-/*----------------------------------------------------------------------------*/
 // Misc
 static pthread_mutex_t pinMutex ;
 
-/*----------------------------------------------------------------------------*/
-#ifdef __ANDROID__
-int pthread_cancel(pthread_t h) {
-    return pthread_kill(h, 0);
-}
-#endif /* __ANDROID__ */
-
-/*----------------------------------------------------------------------------*/
-
 // Debugging & Return codes
-int wiringPiDebug       = FALSE ;
+int wiringPiDebug       = TRUE ;
 int wiringPiReturnCodes = FALSE ;
 int wiringPiSetuped     = FALSE ;
 
-// ODROID Wiring Library
-struct libodroid	libwiring;
+// Wiring Library
+struct libWiringpi	libwiring;
 
 // Current kernel version
 struct kernelVersionStruct *kernelVersion = &(struct kernelVersionStruct) {
@@ -156,11 +121,7 @@ struct kernelVersionStruct *kernelVersion = &(struct kernelVersionStruct) {
 	.release = ""
 };
 
-/*----------------------------------------------------------------------------*/
-//
 // Return true/false if the supplied module is loaded
-//
-/*----------------------------------------------------------------------------*/
 int moduleLoaded (char *modName)
 {
 	int len   = strlen (modName) ;
@@ -186,11 +147,7 @@ int moduleLoaded (char *modName)
 	return found ;
 }
 
-/*----------------------------------------------------------------------------*/
-//
-// ODROID System Message function
-//
-/*----------------------------------------------------------------------------*/
+//System Message function
 int msg (int type, const char *message, ...)
 {
 	va_list argp;
@@ -207,19 +164,15 @@ int msg (int type, const char *message, ...)
 	return 0 ;
 }
 
-/*----------------------------------------------------------------------------*/
 static void warn_msg(const char *func)
 {
-	msg(MSG_WARN, "(%s) : This function is not supported by ODROID Board.\n", func);
+	msg(MSG_WARN, "(%s) : This function is not supported by Bananapi Board.\n", func);
 }
 
-/*----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/
 /*
  * wiringPiFailure:
  *	Fail. Or not.
  */
-/*----------------------------------------------------------------------------*/
 int wiringPiFailure (int fatal, const char *message, ...)
 {
 	va_list argp ;
@@ -238,13 +191,11 @@ int wiringPiFailure (int fatal, const char *message, ...)
 	return 0 ;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * setupCheck
  *	Another sanity check because some users forget to call the setup
  *	function. Mosty because they need feeding C drip by drip )-:
  */
-/*----------------------------------------------------------------------------*/
 void setupCheck(const char *fName)
 {
 	if (!wiringPiSetuped) {
@@ -254,13 +205,11 @@ void setupCheck(const char *fName)
 	}
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * usingGpiomemCheck: setUsingGpiomem:
  *	See if we're using the /dev/gpiomem interface, if-so then some operations
  *	can't be done and will crash the Pi.
  */
-/*----------------------------------------------------------------------------*/
 void usingGpiomemCheck(const char *what)
 {
 	if (libwiring.usingGpiomem) {
@@ -274,12 +223,10 @@ void setUsingGpiomem(const unsigned int value)
 	libwiring.usingGpiomem = value;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * setKernelVersion:
  *	It sets current operating kernel version to the global struct variable.
  */
-/*----------------------------------------------------------------------------*/
 void setKernelVersion() {
 	struct utsname uname_buf;
 
@@ -329,14 +276,12 @@ void setKernelVersion() {
 	kernelVersion->revision = kernelNumbers[2];
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * cmpKernelVersion:
  *	It compares kernel version between the current one and the passed in
  *	numbers. If the current one is bigger than the arguments, it returns
  *	true, or it returns false.
  */
-/*----------------------------------------------------------------------------*/
 char cmpKernelVersion(int num, ...) {
 	va_list valist;
 	int versionCompareTo[3] = { 0, };
@@ -374,7 +319,6 @@ char cmpKernelVersion(int num, ...) {
 	return ret;
 }
 
-/*----------------------------------------------------------------------------*/
 int getModelFromCpuinfo(char *line, FILE *cpuFd) {
 	char *model;
 
@@ -388,12 +332,9 @@ int getModelFromCpuinfo(char *line, FILE *cpuFd) {
 			if (wiringPiDebug)
 				printf("piGpioLayout: %s: Hardware: %s\n", __func__, line);
 
-			model = strcasestr(line, "odroid");
-			if (!model) {
-				model = strcasestr(line, "BPI");
-				if (!model)
-					return -1;
-			}
+			model = strcasestr(line, "BPI");
+			if (!model)
+				return -1;
 
 			strcpy(line, model);
 			return 0;
@@ -403,7 +344,6 @@ int getModelFromCpuinfo(char *line, FILE *cpuFd) {
 	return -1;
 }
 
-/*----------------------------------------------------------------------------*/
 int getModelFromDt(char *line, FILE *dtFd) {
 	char *model;
 
@@ -414,7 +354,7 @@ int getModelFromDt(char *line, FILE *dtFd) {
 		if (wiringPiDebug)
 			printf("piGpioLayout: %s: Hardware: %s\n", __func__, line);
 
-		model = strcasestr(line, "odroid");
+		model = strcasestr(line, "Bananapi");
 		if (!model)
 			return -1;
 
@@ -434,7 +374,7 @@ int piGpioLayout (void) {
 	int i;
 
 	if (getModelFromDt(line, dtFd) != 0 && getModelFromCpuinfo(line, cpuFd) != 0)
-		wiringPiFailure(WPI_FATAL, "** This board is not an Odroid **");
+		wiringPiFailure(WPI_FATAL, "** This board is not an Bananapi **");
 
 	for (i = 1; i < (int)(sizeof(piModelNames) / sizeof(char*)); i++) {
 		if (piModelNames[i] == NULL) {
@@ -452,12 +392,7 @@ int piGpioLayout (void) {
 	buf = strchr(line, '-');
 	modelCodename = buf != NULL ? buf : strchr(line, ' ');
 	if (modelCodename == NULL) {
-		if (strcmp(line, "ODROIDC") == 0) {
-			// Compatibility for Odroid-C series that are not having proper model name
-			libwiring.model = MODEL_ODROID_C1;
-		} else {
 			wiringPiFailure(WPI_FATAL, "** Model string on this board is not well formatted **");
-		}
 	} else {
 		modelCodename++;
 
@@ -473,76 +408,27 @@ int piGpioLayout (void) {
 	}
 
 	switch (libwiring.model) {
-		case MODEL_ODROID_C1:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 2;
-			libwiring.rev = 1;
-			break;
-		case MODEL_ODROID_C2:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 3;
-			{
-				int fd = 0;
-				char buf[2];
-
-				if ((fd = open("/sys/class/odroid/boardrev", O_RDONLY)) < 0) {
-					printf ("ERROR : file not found.(boardrev)\n");
-					libwiring.rev = 1;
-				} else {
-					if (read(fd, buf, sizeof(buf)) < 0) {
-						fprintf(stderr, "Unable to read from the file descriptor: %s \n", strerror(errno));
-					}
-					close(fd);
-					libwiring.rev = atoi(buf) + 1;
-				}
-			}
-			break;
-		case MODEL_ODROID_XU3:
-			libwiring.maker = MAKER_SAMSUNG;
-			libwiring.mem = 3;
-			libwiring.rev = 1;
-			break;
-		case MODEL_ODROID_N1:
-			libwiring.maker = MAKER_ROCKCHIP;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_ODROID_N2:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_ODROID_C4:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_ODROID_HC4:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_BANANAPI_M5:
-		case MODEL_BANANAPI_M2PRO:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_BANANAPI_M2S:
-		case MODEL_BANANAPI_CM4:
-		case MODEL_BANANAPI_RPICM4:
-		case MODEL_BANANAPI_CM5IO:
-		case MODEL_BANANAPI_CM5BPICM4IO:
-			libwiring.maker = MAKER_AMLOGIC;
-			libwiring.mem = 4;
-			libwiring.rev = 1;
-			break;
-		case MODEL_UNKNOWN:
-		default:
-			libwiring.model = MAKER_UNKNOWN;
-			libwiring.maker = MAKER_UNKNOWN;
-			libwiring.mem = 0;
-			libwiring.rev = 0;
+			case MODEL_BANANAPI_M5:
+			case MODEL_BANANAPI_M2PRO:
+				libwiring.maker = MAKER_AMLOGIC;
+				libwiring.mem = 4;
+				libwiring.rev = 1;
+				break;
+			case MODEL_BANANAPI_M2S:
+			case MODEL_BANANAPI_CM4:
+			case MODEL_BANANAPI_RPICM4:
+			case MODEL_BANANAPI_CM5IO:
+			case MODEL_BANANAPI_CM5BPICM4IO:
+				libwiring.maker = MAKER_AMLOGIC;
+				libwiring.mem = 4;
+				libwiring.rev = 1;
+				break;
+			case MODEL_UNKNOWN:
+			default:
+				libwiring.model = MAKER_UNKNOWN;
+				libwiring.maker = MAKER_UNKNOWN;
+				libwiring.mem = 0;
+				libwiring.rev = 0;
 	}
 
 	if (wiringPiDebug)
@@ -552,23 +438,10 @@ int piGpioLayout (void) {
 	return libwiring.rev;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * piBoardId:
  *	Return the real details of the board we have.
- *
- *  000a - Model ODROID C0/C1/C1+, Rev 1.0, 1024M, Hardkernel
- *  added :
- *  0100 - Model ODROID XU3/4, Rev 1.0, 2048M, Hardkernel
- *  added :
- *  02xx - Model ODROID C2, 2048M, Hardkernel
- *         Rev 1.0 : /sys/class/odroid/boardrev value is 0 (Dev board)
- *         Rev 1.1 : /sys/class/odroid/boardrev value is 1 (Mass board)
- *  03xx - Model ODROID N1, 4096M, Hardkernel
- *  04xx - Model ODROID N2, 4096M, Hardkernel
- *  05xx - Model ODROID C4, 4096M, Hardkernel
  */
-/*----------------------------------------------------------------------------*/
 void piBoardId (int *model, int *rev, int *mem, int *maker, int *warranty)
 {
 	// Call this first to make sure all's OK. Don't care about the result.
@@ -581,13 +454,11 @@ void piBoardId (int *model, int *rev, int *mem, int *maker, int *warranty)
 	*warranty = 1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * wpiPinToGpio:
  *	Translate a wiringPi Pin number to native GPIO pin number.
  *	Provided for external support.
  */
-/*----------------------------------------------------------------------------*/
 int wpiPinToGpio (int wpiPin)
 {
 	setupCheck(__func__);
@@ -598,13 +469,11 @@ int wpiPinToGpio (int wpiPin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * physPinToGpio:
  *	Translate a physical Pin number to native GPIO pin number.
  *	Provided for external support.
  */
-/*----------------------------------------------------------------------------*/
 int physPinToGpio (int physPin)
 {
 	setupCheck(__func__);
@@ -615,12 +484,10 @@ int physPinToGpio (int physPin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * setDrive:
  *	Set the pin driver value
  */
-/*----------------------------------------------------------------------------*/
 void setDrive (int pin, int value)
 {
 	setupCheck(__func__);
@@ -630,12 +497,10 @@ void setDrive (int pin, int value)
 			msg(MSG_WARN, "%s: Not available for pin %d. \n", __func__, pin);
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * getDrive:
  *	Get the pin driver value
  */
-/*----------------------------------------------------------------------------*/
 int getDrive (int pin)
 {
 	setupCheck(__func__);
@@ -646,13 +511,11 @@ int getDrive (int pin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * getAlt:
  *	Returns the ALT bits for a given port. Only really of-use
  *	for the gpio readall command (I think)
  */
-/*----------------------------------------------------------------------------*/
 int getAlt (int pin)
 {
 	setupCheck(__func__);
@@ -663,13 +526,11 @@ int getAlt (int pin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * pwmSetRange:
  *	Set the PWM range register. We set both range registers to the same
  *	value. If you want different in your own code, then write your own.
  */
-/*----------------------------------------------------------------------------*/
 void pwmSetRange (unsigned int range)
 {
 	setupCheck(__func__);
@@ -681,14 +542,12 @@ void pwmSetRange (unsigned int range)
 	}
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * pwmSetClock:
  *	Set/Change the PWM clock. Originally my code, but changed
  *	(for the better!) by Chris Hall, <chris@kchall.plus.com>
  *	after further study of the manual and testing with a 'scope
  */
-/*----------------------------------------------------------------------------*/
 void pwmSetClock (int divisor)
 {
 	setupCheck(__func__);
@@ -700,13 +559,11 @@ void pwmSetClock (int divisor)
 	}
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * getPUPD:
  *	Returns the PU/PD bits for a given port. Only really of-use
  *	for the gpio readall command (I think)
  */
-/*----------------------------------------------------------------------------*/
 int getPUPD (int pin)
 {
 	setupCheck(__func__);
@@ -717,11 +574,9 @@ int getPUPD (int pin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * Core Functions
  */
-/*----------------------------------------------------------------------------*/
 void pinMode (int pin, int mode)
 {
 	setupCheck(__func__);
@@ -732,7 +587,6 @@ void pinMode (int pin, int mode)
 
 }
 
-/*----------------------------------------------------------------------------*/
 void pullUpDnControl (int pin, int pud)
 {
 	setupCheck(__func__);
@@ -742,7 +596,6 @@ void pullUpDnControl (int pin, int pud)
 			msg(MSG_WARN, "%s: Not available for pin %d. \n", __func__, pin);
 }
 
-/*----------------------------------------------------------------------------*/
 int digitalRead (int pin)
 {
 	setupCheck(__func__);
@@ -753,7 +606,6 @@ int digitalRead (int pin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 void digitalWrite (int pin, int value)
 {
 	setupCheck(__func__);
@@ -763,7 +615,6 @@ void digitalWrite (int pin, int value)
 			msg(MSG_WARN, "%s: Not available for pin %d. \n", __func__, pin);
 }
 
-/*----------------------------------------------------------------------------*/
 void pwmWrite(int pin, int value)
 {
 	setupCheck(__func__);
@@ -776,7 +627,6 @@ void pwmWrite(int pin, int value)
 	}
 }
 
-/*----------------------------------------------------------------------------*/
 int analogRead (int pin)
 {
 	setupCheck(__func__);
@@ -787,7 +637,6 @@ int analogRead (int pin)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 void digitalWriteByte (const int value)
 {
 	setupCheck(__func__);
@@ -797,7 +646,6 @@ void digitalWriteByte (const int value)
 			msg(MSG_WARN, "%s: Not available. \n", __func__);
 }
 
-/*----------------------------------------------------------------------------*/
 unsigned int digitalReadByte (void)
 {
 	setupCheck(__func__);
@@ -808,7 +656,6 @@ unsigned int digitalReadByte (void)
 	return	-1;
 }
 
-/*----------------------------------------------------------------------------*/
 int waitForInterrupt (int pin, int mS)
 {
 	int fd, x;
@@ -975,7 +822,6 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
 	return 0 ;
 }
 
-/*----------------------------------------------------------------------------*/
 int wiringPiISRCancel(int pin) {
 	int GpioPin = -1;
 
@@ -1010,7 +856,6 @@ int wiringPiISRCancel(int pin) {
 	return 0;
 }
 
-/*----------------------------------------------------------------------------*/
 static void initialiseEpoch (void)
 {
 #ifdef	OLD_WAY
@@ -1032,7 +877,6 @@ static void initialiseEpoch (void)
 #endif
 }
 
-/*----------------------------------------------------------------------------*/
 void delay (unsigned int howLong)
 {
 	struct timespec sleeper, dummy;
@@ -1043,7 +887,6 @@ void delay (unsigned int howLong)
 	nanosleep (&sleeper, &dummy) ;
 }
 
-/*----------------------------------------------------------------------------*/
 void delayMicrosecondsHard (unsigned int howLong)
 {
 	struct timeval tNow, tLong, tEnd;
@@ -1057,7 +900,6 @@ void delayMicrosecondsHard (unsigned int howLong)
 		gettimeofday (&tNow, NULL) ;
 }
 
-/*----------------------------------------------------------------------------*/
 void delayMicroseconds (unsigned int howLong)
 {
 	struct timespec sleeper;
@@ -1075,7 +917,6 @@ void delayMicroseconds (unsigned int howLong)
 	}
 }
 
-/*----------------------------------------------------------------------------*/
 unsigned int millis (void)
 {
 	uint64_t now;
@@ -1096,7 +937,6 @@ unsigned int millis (void)
 	return (uint32_t)(now - libwiring.epochMilli);
 }
 
-/*----------------------------------------------------------------------------*/
 unsigned int micros (void)
 {
 	uint64_t now;
@@ -1116,25 +956,19 @@ unsigned int micros (void)
 	return (uint32_t)(now - libwiring.epochMicro);
 }
 
-/*----------------------------------------------------------------------------*/
-//
-// Unsupport Function list on ODROIDs
-//
-/*----------------------------------------------------------------------------*/
+// Unsupport Function list Bananapi
 static 	void UNU piGpioLayoutOops	(const char UNU *why)	{ warn_msg(__func__); return; }
-	void gpioClockSet	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
+void gpioClockSet	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
 
-	/* core unsupport function */
-	void pinModeAlt		(int UNU pin, int UNU mode)	{ warn_msg(__func__); return; }
-	void analogWrite	(int UNU pin, int UNU value)	{ warn_msg(__func__); return; }
-	void pwmToneWrite	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
-	void digitalWriteByte2	(const int UNU value)	{ warn_msg(__func__); return; }
-	unsigned int digitalReadByte2 (void)		{ warn_msg(__func__); return -1; }
+/* core unsupport function */
+void pinModeAlt		(int UNU pin, int UNU mode)	{ warn_msg(__func__); return; }
+void analogWrite	(int UNU pin, int UNU value)	{ warn_msg(__func__); return; }
+void pwmToneWrite	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
+void digitalWriteByte2	(const int UNU value)	{ warn_msg(__func__); return; }
+unsigned int digitalReadByte2 (void)		{ warn_msg(__func__); return -1; }
 
-/*----------------------------------------------------------------------------*/
 // Extend wiringPi with other pin-based devices and keep track of
 //	them in this structure
-/*----------------------------------------------------------------------------*/
 struct wiringPiNodeStruct *wiringPiNodes = NULL ;
 
 /*
@@ -1201,14 +1035,12 @@ struct wiringPiNodeStruct *wiringPiNewNode (int pinBase, int numPins)
 	return node ;
 }
 
-/*----------------------------------------------------------------------------*/
 void wiringPiVersion (int *major, char **minor)
 {
 	*major = VERSION_MAJOR ;
 	*minor = VERSION_MINOR ;
 }
 
-/*----------------------------------------------------------------------------*/
 int wiringPiSetup (void)
 {
 	int i;
@@ -1218,7 +1050,7 @@ int wiringPiSetup (void)
 	wiringPiSetuped = TRUE;
 
 	// libwiring init
-	memset(&libwiring, 0x00, sizeof(struct libodroid));
+	memset(&libwiring, 0x00, sizeof(struct libWiringpi));
 	// sysFds init
 	for(i = 0; i < 256; i++)
 		libwiring.sysFds[i] = -1;
@@ -1243,27 +1075,6 @@ int wiringPiSetup (void)
 	}
 
 	switch (libwiring.model) {
-		case MODEL_ODROID_C1:
-			init_odroidc1(&libwiring);
-			break;
-		case MODEL_ODROID_C2:
-			init_odroidc2(&libwiring);
-			break;
-		case MODEL_ODROID_XU3:
-			init_odroidxu3(&libwiring);
-			break;
-		case MODEL_ODROID_N1:
-			init_odroidn1(&libwiring);
-			break;
-		case MODEL_ODROID_N2:
-			init_odroidn2(&libwiring);
-			break;
-		case MODEL_ODROID_C4:
-			init_odroidc4(&libwiring);
-			break;
-		case MODEL_ODROID_HC4:
-			init_odroidhc4(&libwiring);
-			break;
 		case MODEL_BANANAPI_M5:
 		case MODEL_BANANAPI_M2PRO:
 			init_bananapim5(&libwiring);
@@ -1293,7 +1104,6 @@ int wiringPiSetup (void)
 	return 0;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * wiringPiSetupGpio:
  *	Must be called once at the start of your program execution.
@@ -1301,7 +1111,6 @@ int wiringPiSetup (void)
  * GPIO setup: Initialises the system into GPIO Pin mode and uses the
  *	memory mapped hardware directly.
  */
-/*----------------------------------------------------------------------------*/
 int wiringPiSetupGpio (void)
 {
 	(void)wiringPiSetup ();
@@ -1313,7 +1122,6 @@ int wiringPiSetupGpio (void)
 	return 0 ;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * wiringPiSetupPhys:
  *	Must be called once at the start of your program execution.
@@ -1321,7 +1129,6 @@ int wiringPiSetupGpio (void)
  * Phys setup: Initialises the system into Physical Pin mode and uses the
  *	memory mapped hardware directly.
  */
-/*----------------------------------------------------------------------------*/
 int wiringPiSetupPhys (void)
 {
 	(void)wiringPiSetup () ;
@@ -1333,7 +1140,6 @@ int wiringPiSetupPhys (void)
 	return 0 ;
 }
 
-/*----------------------------------------------------------------------------*/
 /*
  * wiringPiSetupSys:
  *	Must be called once at the start of your program execution.
@@ -1342,7 +1148,6 @@ int wiringPiSetupPhys (void)
  *	interface to the GPIO systems - slightly slower, but always usable as
  *	a non-root user, assuming the devices are already exported and setup correctly.
  */
-/*----------------------------------------------------------------------------*/
 int wiringPiSetupSys (void)
 {
 	int pin ;
@@ -1358,16 +1163,7 @@ int wiringPiSetupSys (void)
 
 	for (pin = 0 ; pin < 256 ; ++pin)
 	{
-		switch (libwiring.model) {
-		case	MODEL_ODROID_N1:
-		case	MODEL_ODROID_N2:
-			sprintf (fName, "/sys/class/gpio/gpio%d/value", pin + libwiring.pinBase);
-			break;
-		default:
-			sprintf (fName, "/sys/class/gpio/gpio%d/value", pin);
-			break;
-		}
-
+		sprintf (fName, "/sys/class/gpio/gpio%d/value", pin);
 		libwiring.sysFds [pin] = open (fName, O_RDWR);
 	}
 
@@ -1376,7 +1172,3 @@ int wiringPiSetupSys (void)
 	libwiring.mode = MODE_GPIO_SYS;
 	return 0;
 }
-
-/*----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/

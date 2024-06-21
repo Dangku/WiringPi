@@ -168,8 +168,8 @@
 extern "C" {
 #endif
 
-extern void init_bananapicm5io (struct libodroid *libwiring);
-extern void init_bananapicm5bpicm4io (struct libodroid *libwiring);
+extern void init_bananapicm5io (struct libWiringpi *libwiring);
+extern void init_bananapicm5bpicm4io (struct libWiringpi *libwiring);
 
 #ifdef __cplusplus
 }

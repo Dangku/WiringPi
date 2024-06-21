@@ -50,8 +50,8 @@ LIBS    = -lm -lpthread -lrt -lcrypt
 
 SRC	=	wiringPi.c						\
 		wiringSerial.c wiringShift.c				\
-		wiringPiSPI.c wiringPiI2C.c				\
 		piHiPri.c piThread.c					\
+		wiringPiSPI.c wiringPiI2C.c				\
 		softPwm.c softTone.c softServo.c			\
 		mcp23008.c mcp23016.c mcp23017.c			\
 		mcp23s08.c mcp23s17.c					\
@@ -63,14 +63,7 @@ SRC	=	wiringPi.c						\
 		bmp180.c htu21d.c ds18b20.c rht03.c			\
 		drcSerial.c drcNet.c					\
 		pseudoPins.c						\
-		wpiExtensions.c					\
-		odroidc1.c						\
-		odroidc2.c						\
-		odroidxu3.c						\
-		odroidn1.c						\
-		odroidn2.c						\
-		odroidc4.c						\
-		odroidhc4.c						\
+		wpiExtensions.c						\
 		bananapim5.c						\
 		bananapim2s.c						\
 		bananapicm4.c                                           \
@@ -120,19 +113,8 @@ install:	$(DYNAMIC)
 	$Q echo "[Install Dynamic Lib]"
 	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
 	$Q install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
-	$Q ln -sf libwiringPi.so.$(VERSION)				$(DESTDIR)/lib/libwiringPi.so.$(MAJOR)
-	$Q ln -sf libwiringPi.so.$(MAJOR)				$(DESTDIR)/lib/libwiringPi.so
+	$Q ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)	$(DESTDIR)/lib/libwiringPi.so
 	$Q $(LDCONFIG)
-
-.PHONY:	install-deb
-install-deb:	$(DYNAMIC)
-	$Q echo "[Install Headers: deb]"
-	$Q install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
-	$Q install -m 0644 $(HEADERS)					$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
-	$Q echo "[Install Dynamic Lib: deb]"
-	install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib
-	install -m 0755 libwiringPi.so.$(VERSION)			$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib/libwiringPi.so.$(VERSION)
-	cd  $(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib && ln -sf libwiringPi.so.$(VERSION)	libwiringPi.so && cd -
 
 .PHONY:	install-static
 install-static:	$(STATIC)
@@ -143,10 +125,19 @@ install-static:	$(STATIC)
 	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
 	$Q install -m 0755 libwiringPi.a				$(DESTDIR)$(PREFIX)/lib
 
+.PHONY:	install-deb
+install-deb:	$(DYNAMIC)
+	$Q echo "[Install Headers: deb]"
+	$Q install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/include
+	$Q install -m 0644 $(HEADERS)					$(DEBTEMPDIR)/debian-template/wiringPi/usr/include
+	$Q echo "[Install Dynamic Lib: deb]"
+	install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib
+	install -m 0755 libwiringPi.so.$(VERSION)			$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)
+	ln -sf $(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)	$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPi.so
 .PHONY:	uninstall
 uninstall:
 	$Q echo "[UnInstall]"
-	$Q cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS) wiringOdroid*.h
+	$Q cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS)
 	$Q cd $(DESTDIR)$(PREFIX)/lib/     && rm -f libwiringPi.*
 	$Q $(LDCONFIG)
 
@@ -159,10 +150,10 @@ depend:
 wiringPi.o: softPwm.h softTone.h wiringPi.h ../version.h
 wiringSerial.o: wiringSerial.h
 wiringShift.o: wiringPi.h wiringShift.h
-wiringPiSPI.o: wiringPi.h wiringPiSPI.h
-wiringPiI2C.o: wiringPi.h wiringPiI2C.h
 piHiPri.o: wiringPi.h
 piThread.o: wiringPi.h
+wiringPiSPI.o: wiringPi.h wiringPiSPI.h
+wiringPiI2C.o: wiringPi.h wiringPiI2C.h
 softPwm.o: wiringPi.h softPwm.h
 softTone.o: wiringPi.h softTone.h
 softServo.o: wiringPi.h softServo.h
@@ -193,14 +184,7 @@ wpiExtensions.o: mcp4802.h mcp3422.h max31855.h max5322.h ads1115.h sn3218.h
 wpiExtensions.o: drcSerial.h pseudoPins.h bmp180.h htu21d.h ds18b20.h
 wpiExtensions.o: wpiExtensions.h
 
-# ODROID Boards
-odroidc1.o  : wiringPi.h odroidc1.h
-odroidc2.o  : wiringPi.h odroidc2.h
-odroidxu3.o : wiringPi.h odroidxu3.h
-odroidn1.o  : wiringPi.h odroidn1.h
-odroidn2.o  : wiringPi.h odroidn2.h
-odroidc4.o  : wiringPi.h odroidc4.h
-odroidhc4.o  : wiringPi.h odroidc4.h
+# Bananapi Boards
 bananapim5.o : wiringPi.h bananapim5.h
 bananapim2s.o : wiringPi.h bananapim2s.h
 bananapicm4.o : wiringPi.h bananapicm4.h

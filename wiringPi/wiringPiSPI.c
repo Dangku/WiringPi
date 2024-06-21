@@ -39,13 +39,14 @@
 //	Variables as they need to be passed as pointers later on
 
 static const char       *spiDevType0    = "/dev/spidev0.";
-static const char       *spiDevType1    = "/dev/spidev1.";
+//static const char       *spiDevType1    = "/dev/spidev1.";
 static const char       *spiDevType3    = "/dev/spidev3.";
+
 static const uint8_t     spiBPW         = 8;
 static const uint16_t    spiDelay       = 0;
 
-static uint32_t    spiSpeeds [8];
-static int         spiFds [8];
+static uint32_t    spiSpeeds [2] ;
+static int         spiFds [2] ;
 
 
 /*
@@ -56,7 +57,7 @@ static int         spiFds [8];
 
 int wiringPiSPIGetFd (int channel)
 {
-  return spiFds [channel & 0x7] ;
+  return spiFds [channel & 1] ;
 }
 
 
@@ -73,7 +74,7 @@ int wiringPiSPIDataRW (int channel, unsigned char *data, int len)
 {
   struct spi_ioc_transfer spi ;
 
-  channel &= 0x7 ;
+  channel &= 1 ;
 
 // Mentioned in spidev.h but not used in the original kernel documentation
 //	test program )-:
@@ -100,8 +101,7 @@ int wiringPiSPISetupInterface	(const char *device, int channel, int speed, int m
 {
 	int fd ;
 
-	channel &= 0x7;
-	mode    &= 3;
+	mode    &= 3 ;	// Mode is 0, 1, 2 or 3
 
 	if ((fd = open (device, O_RDWR)) < 0)
 		return wiringPiFailure (WPI_ALMOST,
@@ -139,16 +139,9 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 
 	piBoardId (&model, &temp, &temp, &temp, &temp) ;
 
+	channel &= 1 ;	// Channel is 0 or 1
+
 	switch(model)	{
-		case MODEL_ODROID_C2:
-			return wiringPiFailure (WPI_ALMOST,
-				"ODROID C2 does not support hardware SPI. Check out the SPI bitbang and use wiringPiSPISetupInterface.\n");
-		case MODEL_ODROID_HC4:
-			return wiringPiFailure (WPI_ALMOST,
-				"ODROID HC4 does not support hardware SPI.\n");
-		case MODEL_ODROID_C1:
-		case MODEL_ODROID_N2:
-		case MODEL_ODROID_C4:
 		case MODEL_BANANAPI_M5:
 		case MODEL_BANANAPI_M2PRO:
 		case MODEL_BANANAPI_M2S:
@@ -159,15 +152,6 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 		case MODEL_BANANAPI_CM5IO:
 		case MODEL_BANANAPI_CM5BPICM4IO:
 			sprintf(device, "%s%d", spiDevType3, channel);
-			break;
-		case MODEL_ODROID_XU3:
-			if (cmpKernelVersion(KERN_NUM_TO_MAJOR, 5))
-				sprintf(device, "%s%d", spiDevType0, channel);
-			else
-				sprintf(device, "%s%d", spiDevType1, channel);
-			break;
-		case MODEL_ODROID_N1:
-			sprintf(device, "%s%d", spiDevType1, channel);
 			break;
 	}
 

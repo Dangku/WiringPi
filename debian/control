@@ -1,28 +1,29 @@
-Source: odroid-wiringpi
+Source: wiringpi
 Section: electronics
 Priority: optional
-Maintainer: Deokgyu Yang <secugyu@gmail.com>
+Maintainer: Dangku <dangku@sinovoip.com>
 Standards-Version: 3.8.0
-Homepage: https://wiki.odroid.com
-Build-Depends: debhelper (>= 10)
+Homepage: http://wiringpi.com/
+Build-Depends: debhelper (>= 8)
 
 Package: libwiringpi2
 Section: libs
-Architecture: any
+Architecture: arm64
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: GPIO libraries for ODROID (runtime).
+Description: GPIO libraries for Bananapi (runtime).
  Runtime for the popular wiringPi library.
 
-Package: odroid-wiringpi
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libwiringpi2 (= ${binary:Version})
-Description: gpio utility for ODROID
+Package: wiringpi
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: gpio utility for Bananapi
  The wiringPi gpio command line utility, for GPIO access on a
- ODROID from the command line.
+ Bananapi from the command line.
 
 Package: libwiringpi-dev
-Architecture: any
-Depends: libc6-dev, ${misc:Depends}, libwiringpi2 (= ${binary:Version}), odroid-wiringpi (= ${binary:Version}),
-Description: GPIO development library for ODROID
- Development libraries to allow GPIO access on a ODROID from C
+Architecture: arm64
+Depends: libwiringpi2 (= ${binary:Version}), libc6-dev, ${misc:Depends}
+Suggests: wiringpi
+Description: GPIO development library for Bananapi
+ Development libraries to allow GPIO access on a Bananapi from C
  and C++ programs.

@@ -87,7 +87,7 @@
 extern "C" {
 #endif
 
-extern void init_bananapim5 (struct libodroid *libwiring);
+extern void init_bananapim5 (struct libWiringpi *libwiring);
 
 #ifdef __cplusplus
 }

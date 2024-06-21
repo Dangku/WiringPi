@@ -142,15 +142,7 @@ void softToneStop (int pin)
 {
   if (threads [pin] != 0)
   {
-#ifdef ANDROID
-      int status;
-      if ( (status = pthread_kill(pin, SIGUSR1)) != 0)
-      {
-        printf("Error cancelling thread %d", pin);
-      }
-#else
-      pthread_cancel (threads [pin]) ;
-#endif
+    pthread_cancel (threads [pin]) ;
     pthread_join   (threads [pin], NULL) ;
     threads [pin] = 0 ;
     digitalWrite (pin, LOW) ;

@@ -26,8 +26,6 @@ DESTDIR?=/usr
 PREFIX?=/local
 DEBTEMPDIR?=../
 
-MAJOR=$(shell cat ../VERSION | cut -d'.' -f1)
-
 LDCONFIG?=ldconfig
 
 ifneq ($V,1)
@@ -40,7 +38,7 @@ DYNAMIC=libwiringPiDev.so.$(VERSION)
 #DEBUG	= -g -O0
 DEBUG	= -O2
 CC	= gcc
-INCLUDE	= -I. -I../wiringPi
+INCLUDE	= -I.
 DEFS	= -D_GNU_SOURCE
 CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Winline $(INCLUDE) -pipe -fPIC
 
@@ -96,8 +94,7 @@ install:	$(DYNAMIC)
 	$Q echo "[Install Dynamic Lib]"
 	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
 	$Q install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
-	$Q ln -sf libwiringPiDev.so.$(VERSION)				$(DESTDIR)/lib/libwiringPiDev.so.$(MAJOR)
-	$Q ln -sf libwiringPiDev.so.$(MAJOR)				$(DESTDIR)/lib/libwiringPiDev.so
+	$Q ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)	$(DESTDIR)/lib/libwiringPiDev.so
 	$Q $(LDCONFIG)
 
 .PHONY:	install-static
@@ -112,12 +109,12 @@ install-static:	$(STATIC)
 .PHONY:	install-deb
 install-deb:	$(DYNAMIC)
 	$Q echo "[Install Headers: deb]"
-	$Q install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
-	$Q install -m 0644 $(HEADERS)					$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
+	$Q install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/include
+	$Q install -m 0644 $(HEADERS)					$(DEBTEMPDIR)/debian-template/wiringPi/usr/include
 	$Q echo "[Install Dynamic Lib: deb]"
-	install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib
-	install -m 0755 libwiringPiDev.so.$(VERSION)				$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib/libwiringPiDev.so.$(VERSION)
-	cd $(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib && ln -sf libwiringPiDev.so.$(VERSION)	libwiringPiDev.so
+	install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib
+	install -m 0755 libwiringPiDev.so.$(VERSION)			$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)
+	ln -sf $(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)	$(DEBTEMPDIR)/debian-template/wiringPi/usr/lib/libwiringPiDev.so
 
 .PHONY:	uninstall
 uninstall:
@@ -140,3 +137,5 @@ gertboard.o: gertboard.h
 piFace.o: piFace.h
 lcd128x64.o: font.h lcd128x64.h
 lcd.o: lcd.h
+scrollPhat.o: scrollPhatFont.h scrollPhat.h
+piGlow.o: piGlow.h

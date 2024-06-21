@@ -20,21 +20,12 @@
  *    along with wiringPi.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************
  */
-/*----------------------------------------------------------------------------*/
 #ifndef	__WIRING_H__
 #define	__WIRING_H__
 
-/*----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdint.h>
 #include <pthread.h>
-
-/*----------------------------------------------------------------------------*/
-
-#ifdef __ANDROID__
-#define __bswap_16(x)	bswap_16(x)
-#define __bswap_32(x)	bswap_32(x)
-#endif
 
 #ifndef	TRUE
 #define	TRUE	(1==1)
@@ -53,26 +44,18 @@
 #define KERN_NUM_TO_REVISION	3
 
 #define	MODEL_UNKNOWN		0
-#define	MODEL_ODROID_C1		1
-#define	MODEL_ODROID_C2		2
-#define	MODEL_ODROID_XU3	3
-#define	MODEL_ODROID_N1		4
-#define	MODEL_ODROID_N2		5
-#define	MODEL_ODROID_C4		6
-#define	MODEL_ODROID_HC4	7
-#define MODEL_BANANAPI_M5	8
-#define MODEL_BANANAPI_M2PRO    9
-#define MODEL_BANANAPI_M2S	10
-#define MODEL_BANANAPI_CM4	11
-#define MODEL_BANANAPI_RPICM4   12
-#define MODEL_BANANAPI_CM5IO	13
-#define MODEL_BANANAPI_CM5BPICM4IO	14
+#define MODEL_BANANAPI_M5	1
+#define MODEL_BANANAPI_M2PRO    2
+#define MODEL_BANANAPI_M2S	3
+#define MODEL_BANANAPI_CM4	4
+#define MODEL_BANANAPI_RPICM4   5
+#define MODEL_BANANAPI_CM5IO	6
+#define MODEL_BANANAPI_CM5BPICM4IO	7
 
 #define	MAKER_UNKNOWN		0
 #define	MAKER_AMLOGIC		1
-#define	MAKER_SAMSUNG		2
-#define	MAKER_ROCKCHIP		3
 
+// rename wiringPi modes
 #define	MODE_PINS		0
 #define	MODE_GPIO		1
 #define	MODE_GPIO_SYS		2
@@ -105,8 +88,6 @@
 #define	INT_EDGE_RISING		2
 #define	INT_EDGE_BOTH		3
 
-// Module names
-#define AML_MODULE_I2C		"aml_i2c"
 
 // Threads
 #define	PI_THREAD(X)		void *X (UNU void *dummy)
@@ -125,20 +106,13 @@ extern const char *piRevisionNames [16];
 extern const char *piMakerNames    [16];
 extern const int   piMemorySize    [ 8];
 
-/*----------------------------------------------------------------------------*/
-#if !defined(ANDROID)
-#define	PAGE_SIZE		(4*1024)
-#endif
 #define	BLOCK_SIZE		(4*1024)
 
-/*----------------------------------------------------------------------------*/
-/* Debug message display function */
-/*----------------------------------------------------------------------------*/
+// Debug message display function
 #define	MSG_ERR		-1
 #define	MSG_WARN	-2
 
-/*----------------------------------------------------------------------------*/
-struct libodroid
+struct libWiringpi
 {
 	/* H/W model info */
 	int	model, rev, mem, maker;
@@ -218,7 +192,6 @@ union	reg_bitfield {
 	} bits;
 };
 
-/*----------------------------------------------------------------------------*/
 // wiringPiNodeStruct:
 //	This describes additional device nodes in the extended wiringPi
 //	2.0 scheme of things.
@@ -226,7 +199,6 @@ union	reg_bitfield {
 //	a binary tree for efficiency reasons - but then again, the chances
 //	of more than 1 or 2 devices being added are fairly slim, so who
 //	knows....
-/*----------------------------------------------------------------------------*/
 struct wiringPiNodeStruct
 {
 	int	pinBase;
@@ -253,10 +225,8 @@ struct wiringPiNodeStruct
 
 extern struct wiringPiNodeStruct *wiringPiNodes;
 
-/*----------------------------------------------------------------------------*/
 // kernelVersionStruct:
 //	Contains the kernel version of the operating board's.
-/*----------------------------------------------------------------------------*/
 struct kernelVersionStruct
 {
 	int major;
@@ -267,11 +237,9 @@ struct kernelVersionStruct
 
 extern struct kernelVersionStruct *kernelVersion;
 
-/*----------------------------------------------------------------------------*/
 // Function prototypes
 //	c++ wrappers thanks to a comment by Nick Lott
 //	(and others on the Raspberry Pi forums)
-/*----------------------------------------------------------------------------*/
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -305,7 +273,7 @@ extern		void pinMode		(int pin, int mode);
 extern		void pullUpDnControl	(int pin, int pud);
 extern		int  digitalRead	(int pin);
 extern		void digitalWrite	(int pin, int value);
-extern unsigned int  digitalReadByte	(void);
+extern		unsigned int  digitalReadByte	(void);
 extern		void digitalWriteByte	(const int value);
 extern		void pwmWrite		(int pin, int value);
 extern		int  analogRead		(int pin);
@@ -343,8 +311,8 @@ extern		void pinModeAlt		(int pin, int mode) UNU;
 extern		void analogWrite	(int pin, int value) UNU;
 extern		void pwmToneWrite	(int pin, int freq) UNU;
 extern		void gpioClockSet	(int pin, int freq) UNU;
-extern unsigned int  digitalReadByte	(void) UNU;
-extern unsigned int  digitalReadByte2	(void) UNU;
+extern		unsigned int  digitalReadByte	(void) UNU;
+extern		unsigned int  digitalReadByte2	(void) UNU;
 extern		void digitalWriteByte	(int value) UNU;
 extern		void digitalWriteByte2	(int value) UNU;
 
@@ -352,7 +320,4 @@ extern		void digitalWriteByte2	(int value) UNU;
 }
 #endif
 
-/*----------------------------------------------------------------------------*/
-#endif	/* __WIRING_H__ */
-/*----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/
+#endif

@@ -1,29 +1,26 @@
 
-ifneq ($V,1)
-Q ?= @
-endif
-
-SRC	=	odroid_xu3.tex	\
-		odroid_c1.tex	\
-		odroid_c2.tex	\
-		odroid_n1.tex	\
-		odroid_n2.tex	\
-		odroid_c4.tex   \
-		bananapi_m5.tex \
+SRC	=	bananapi_m5.tex \
 		bananapi_m2s.tex \
 		bananapi_cm4.tex \
 		bananapi_rpicm4.tex \
 		bananapi_cm5io.tex \
 		bananapi_cm5bpicm4io.tex
 
-DVI	=	$(SRC:.tex=.dvi)
+ifneq ($V,1)
+Q ?= @
+endif
 
-all:	$(DVI)
+
+all:		${SRC}
 	$Q echo	Generating DVI
+	$Q latex  pins.tex
 
-.tex.dvi:
-	$Q latex $< $@
-	$Q dvipdf $@
+pins.dvi:	pins.tex
+	$Q latex  pins.tex
+
+pdf:	pins.dvi
+	$Q dvipdf pins.dvi
+
 
 .PHONY:	clean
 clean:

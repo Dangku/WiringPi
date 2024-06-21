@@ -8,9 +8,9 @@ msg() {
 
 case "$1" in
 	configure)
-		if [ $(ls -l /usr/local/include/wiring*.h 2> /dev/null | wc -l) -gt 0 ]; then
-			msg "Remove previous built header files in /usr/local/include ..."
-			rm -rf /usr/local/include/wiring*.h
+		if [ $(ls -l /usr/include/wiring*.h 2> /dev/null | wc -l) -gt 0 ]; then
+			msg "Remove previous built header files in /usr/include ..."
+			rm -rf /usr/include/wiring*.h
 		fi
 	;;
 

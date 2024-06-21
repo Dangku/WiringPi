@@ -84,7 +84,7 @@ static volatile uint32_t *gpio;
 static volatile uint32_t *pwm;
 
 /* wiringPi Global library */
-static struct libodroid	*lib = NULL;
+static struct libWiringpi	*lib = NULL;
 
 /*----------------------------------------------------------------------------*/
 // Function prototype define
@@ -119,7 +119,7 @@ static void		_pwmSetClock		(int divisor);
 // board init function
 /*----------------------------------------------------------------------------*/
 static void init_gpio_mmap	(void);
-void init_bananapicm5bpicm4io 	(struct libodroid *libwiring);
+void init_bananapicm5bpicm4io 	(struct libWiringpi *libwiring);
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
@@ -671,16 +671,7 @@ static void init_gpio_mmap (void)
 		msg(MSG_ERR, "wiringPiSetup: Cannot open memory area for GPIO use. \n");
 	} else {
 
-#ifdef ANDROID
-#if defined(__aarch64__)
 		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM5_GPIO_BASE);
-#else
-		mapped_gpio = mmap64(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off64_t)CM5_GPIO_BASE);
-#endif
-#else
-		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM5_GPIO_BASE);
-#endif
-
 		if (mapped_gpio == MAP_FAILED)
 			msg(MSG_ERR, "wiringPiSetup: mmap (GPIO) failed: %s \n", strerror (errno));
 		else
@@ -695,7 +686,7 @@ static void init_gpio_mmap (void)
 }
 
 /*----------------------------------------------------------------------------*/
-void init_bananapicm5bpicm4io (struct libodroid *libwiring)
+void init_bananapicm5bpicm4io (struct libWiringpi *libwiring)
 {
 	init_gpio_mmap();
 
