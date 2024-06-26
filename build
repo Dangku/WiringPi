@@ -53,12 +53,17 @@ check_make_ok() {
 configure_gpiomem() {
   [ $(env | grep DEB_BUILD | wc -l) -ne 0 ] && return
 
-  if [ -z $1 ]; then
+  GPIOMEM="/dev/gpiomem"
+
+  if [ -z $1 ] && [ "$(stat -c "%a %G" "$GPIOMEM")" != "660"*"pi" ]; then
     echo "Configure /dev/gpiomem"
     case "$(echo $hardware | tr [:upper:] [:lower:])" in
       *m5|*m2s|*cm4|*cm5io|*cm5-bpicm4io)
         $sudo cp -f udev/rules.d/99-wiringpi-amlogic.rules /etc/udev/rules.d/
         ;;
+      *m4berry|*m4zero)
+        $sudo cp -f udev/rules.d/99-wiringpi-sunxi.rules /etc/udev/rules.d/
+	;;
       *)
         echo "This system seems not Bananapi"
         ;;

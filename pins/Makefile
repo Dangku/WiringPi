@@ -4,7 +4,9 @@ SRC	=	bananapi_m5.tex \
 		bananapi_cm4.tex \
 		bananapi_rpicm4.tex \
 		bananapi_cm5io.tex \
-		bananapi_cm5bpicm4io.tex
+		bananapi_cm5bpicm4io.tex \
+		bananapi_m4berry.tex \
+		bananapi_m4zero.tex
 
 ifneq ($V,1)
 Q ?= @

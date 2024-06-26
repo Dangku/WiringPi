@@ -49,8 +49,8 @@ SRC	=	blink.c blink-bpi.c blink8.c blink12.c				\
 		lowPower.c							\
 		max31855.c							\
 		rht03.c								\
-		blinkall-bpi.c lcd-bpi.c 52pi-bpi.c matrixled-bpi.c			\
-		berryclip-bpi.c
+		blinkall-bpi.c lcd-bpi.c 52pi-bpi.c matrixled-bpi.c		\
+		berryclip-bpi.c pwm-bpi.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -130,6 +130,10 @@ rht03:	rht03.o
 pwm:	pwm.o
 	$Q echo [link]
 	$Q $(CC) -o $@ pwm.o $(LDFLAGS) $(LDLIBS)
+
+pwm-bpi:	pwm-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ pwm-bpi.o $(LDFLAGS) $(LDLIBS)
 
 softPwm:	softPwm.o
 	$Q echo [link]

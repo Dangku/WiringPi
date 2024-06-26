@@ -1,0 +1,2 @@
+# /dev/gpiomem
+SUBSYSTEM=="sunxi-gpiomem", GROUP="pi", MODE="0660"

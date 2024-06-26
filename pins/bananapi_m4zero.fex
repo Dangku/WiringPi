@@ -1,0 +1,99 @@
+\documentclass[11pt,a4paper]{article}
+\parskip 1ex
+\parindent 0em
+\thispagestyle{empty}
+\pagestyle{plain}
+\pagenumbering{arabic}
+\setlength{\topmargin}{0pt}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\textheight}{240mm}
+\setlength{\footskip}{5ex}
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{160mm}
+\usepackage[dvips]{graphics,color}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\begin{document}
+\begin{sffamily}
+\definecolor{rtb-black}{rgb}  {0.0, 0.0, 0.0}
+\definecolor{rtb-navy}{rgb}   {0.0, 0.0, 0.5}
+\definecolor{rtb-green}{rgb}  {0.0, 0.5, 0.0}
+\definecolor{rtb-teal}{rgb}   {0.0, 0.5, 0.5}
+\definecolor{rtb-maroon}{rgb} {0.5, 0.0, 0.0}
+\definecolor{rtb-purple}{rgb} {0.5, 0.0, 0.5}
+\definecolor{rtb-olive}{rgb}  {0.5, 0.5, 0.0}
+\definecolor{rtb-silver}{rgb} {0.7, 0.7, 0.7}
+\definecolor{rtb-grey}{rgb}   {0.5, 0.5, 0.5}
+\definecolor{rtb-blue}{rgb}   {0.0, 0.0, 1.0}
+\definecolor{rtb-lime}{rgb}   {0.0, 1.0, 0.0}
+\definecolor{rtb-aqua}{rgb}   {0.0, 1.0, 1.0}
+\definecolor{rtb-red}{rgb}    {1.0, 0.0, 0.0}
+\definecolor{rtb-fuchsia}{rgb}{1.0, 0.0, 1.0}
+\definecolor{rtb-yellow}{rgb} {1.0, 1.0, 0.0}
+\definecolor{rtb-white}{rgb}  {1.0, 1.0, 1.0}
+
+\begin{center}
+\bfseries{WiringPi: GPIO Pin Numbering Tables}\\
+\tt{https://wiki.banana-pi.org/Banana_Pi_BPI-M4_Berry#PIN_define}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c||p{8mm}|p{8mm}||c|c|c|c|}
+\hline
+\multicolumn{8}{|c|}{\bfseries{Bananapi-M5: 40 Pin GPIO connector(J2)}}\\
+\hline
+\hline
+WiringPi Pin	& Native GPIO	& Name	& \multicolumn{2}{|c||}{Header}	& Name	& Native GPIO	& WiringPi Pin\\
+\hline
+\hline
+	& 					& \textcolor{rtb-red}{3.3v}		& \raggedleft{1} &  2 & \textcolor{rtb-maroon}{5v}		&			 		& \\
+\hline
+8	& 493 (GPIOX.17)	& \textcolor{rtb-aqua}{SDA1}	& \raggedleft{3} &  4 & \textcolor{rtb-maroon}{5v}		& 					& \\
+\hline
+9	& 494 (GPIOX.18)	& \textcolor{rtb-aqua}{SCL1}	& \raggedleft{5} &  6 & \textcolor{rtb-black}{0v}		& 					& \\
+\hline
+7	& 481 (GPIOX.5)		& \textcolor{rtb-green}{GPIO7}	& \raggedleft{7} &  8 & \textcolor{rtb-yellow}{TxD}		& 488 (GPIOX.12)	& 15\\
+\hline
+	&			 		& \textcolor{rtb-black}{0v}		& \raggedleft{9} & 10 & \textcolor{rtb-yellow}{RxD}		& 489 (GPIOX.13)	& 16\\
+\hline
+0	& 479 (GPIOX.3)		& \textcolor{rtb-green}{GPIO0}	& \raggedleft{11} & 12 & \textcolor{rtb-green}{GPIO1}	& 492 (GPIOX.16)	& 1\\
+\hline
+2	& 480 (GPIOX.4)		& \textcolor{rtb-green}{GPIO2}	& \raggedleft{13} & 14 & \textcolor{rtb-black}{0v}		& 					& \\
+\hline
+3	& 483 (GPIOX.7)		& \textcolor{rtb-green}{GPIO3}	& \raggedleft{15} & 16 & \textcolor{rtb-green}{GPIO4}	& 476 (GPIOX.0)		& 4\\
+\hline
+	& 					& \textcolor{rtb-red}{3.3v}		& \raggedleft{17} & 18 & \textcolor{rtb-green}{GPIO5}	& 477 (GPIOX.1)		& 5\\
+\hline
+12	& 484 (GPIOX.8)		& \textcolor{rtb-green}{GPIO12}	& \raggedleft{19} & 20 & \textcolor{rtb-black}{0v}		& 					& \\
+\hline
+13	& 485 (GPIOX.9)	& \textcolor{rtb-green}{GPIO13}	& \raggedleft{21} & 22 & \textcolor{rtb-green}{GPIO6}	& 478 (GPIOX.2)		& 6\\
+\hline
+14	& 487 (GPIOX.11)	& \textcolor{rtb-green}{GPIO14}	& \raggedleft{23} & 24 & \textcolor{rtb-green}{GPIO10}	& 486 (GPIOX.10)	& 10\\
+\hline
+	& 					& \textcolor{rtb-black}{0v}		& \raggedleft{25} & 26 & \textcolor{rtb-green}{GPIO11}	& 23 (GPIOH.6)	& 11\\
+\hline
+30	& 474 (GPIOA.14)	& \textcolor{rtb-aqua}{SDA2}	& \raggedleft{27} & 28 & \textcolor{rtb-aqua}{SCL2}		& 475 (GPIOA.15)	& 31\\
+\hline
+21	& 490 (GPIOX.14)	& \textcolor{rtb-green}{GPIO21}	& \raggedleft{29} & 30 & \textcolor{rtb-black}{0v}		&					& \\
+\hline
+22	& 491 (GPIOX.15)	& \textcolor{rtb-green}{GPIO22}	& \raggedleft{31} & 32 & \textcolor{rtb-green}{GPIO26}	& 24 (GPIOH.7)	& 26\\
+\hline
+23	& 482 (GPIOX.6)		& \textcolor{rtb-green}{GPIO23}	& \raggedleft{33} & 34 & \textcolor{rtb-black}{0v}		&					& \\
+\hline
+24	& 495 (GPIOX.19)		& \textcolor{rtb-green}{GPIO24}	& \raggedleft{35} & 36 & \textcolor{rtb-green}{GPIO27}	& 22 (GPIOH.5)		& 27\\
+\hline
+25	& ADC.AIN1			& \textcolor{rtb-green}{GPIO25}	& \raggedleft{37} & 38 & \textcolor{rtb-green}{GPIO28}	& 1.8V Ref Out		& 28\\
+\hline
+	& 					& \textcolor{rtb-black}{0v}		& \raggedleft{39} & 40 & \textcolor{rtb-green}{GPIO29}	& ADC.AIN0			& 29\\
+\hline
+\hline
+WiringPi Pin	& Native GPIO	& Name	& \multicolumn{2}{|c||}{Header}	& Name	& Native GPIO	& WiringPi Pin\\
+\hline
+\end{tabular}
+\end{center}
+
+\end{sffamily}
+\end{document}

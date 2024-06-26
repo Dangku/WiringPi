@@ -36,18 +36,22 @@
 #include "bananapicm4.h"
 #include "bananapirpicm4.h"
 #include "bananapicm5io.h"
+#include "bananapim4berry.h"
+#include "bananapim4zero.h"
 
 // Const string define
 const char *piModelNames [16] =
 {
 	"Unknown",		// 0
 	"BPI-M5",		// 1
-	"BPI-M2-Pro",	// 2
+	"BPI-M2-Pro",		// 2
 	"BPI-M2S",		// 3 
 	"BPI-CM4",		// 4
-	"BPI-RPICM4",	// 5
-	"BPI-CM5IO",	// 6
-	"BPI-CM5-BPICM4IO",		// 7
+	"BPI-RPICM4",		// 5
+	"BPI-CM5IO",		// 6
+	"BPI-CM5-BPICM4IO",	// 7
+	"BPI-M4Berry",		// 8
+	"BPI-M4Zero",		// 9
 };
 
 const char *piRevisionNames [16] =
@@ -74,7 +78,7 @@ const char *piMakerNames [16] =
 {
 	"Unknown",	// 0
 	"Amlogic",	// 1
-	"Unknown02",	// 2
+	"Allwinner",	// 2
 	"Unknown03",	// 3
 	"Unknown04",	// 4
 	"Unknown05",	// 5
@@ -423,6 +427,12 @@ int piGpioLayout (void) {
 				libwiring.mem = 4;
 				libwiring.rev = 1;
 				break;
+			case MODEL_BANANAPI_M4BERRY:
+			case MODEL_BANANAPI_M4ZERO:
+				libwiring.maker = MAKER_ALLWINNER;
+				libwiring.mem = 2;
+				libwiring.rev = 1;
+				break;
 			case MODEL_UNKNOWN:
 			default:
 				libwiring.model = MAKER_UNKNOWN;
@@ -560,6 +570,22 @@ void pwmSetClock (int divisor)
 }
 
 /*
+ * pwmSetMode:
+ *	Select the native "balanced" mode, or standard mark:space mode
+ *********************************************************************************
+ */
+void pwmSetMode (int mode)
+{
+	setupCheck(__func__);
+
+	if (libwiring.pwmSetMode) {
+		libwiring.pwmSetMode(mode);
+	} else {
+		warn_msg(__func__);
+	}
+}
+
+/*
  * getPUPD:
  *	Returns the PU/PD bits for a given port. Only really of-use
  *	for the gpio readall command (I think)
@@ -635,6 +661,15 @@ int analogRead (int pin)
 		return	libwiring.analogRead(pin);
 
 	return	-1;
+}
+
+void pwmToneWrite (int pin, int freq)
+{
+	setupCheck(__func__);
+
+	if (libwiring.pwmToneWrite)
+		if(libwiring.pwmToneWrite(pin, freq) < 0)
+			msg(MSG_WARN, "%s: Not available. \n", __func__);
 }
 
 void digitalWriteByte (const int value)
@@ -963,7 +998,6 @@ void gpioClockSet	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
 /* core unsupport function */
 void pinModeAlt		(int UNU pin, int UNU mode)	{ warn_msg(__func__); return; }
 void analogWrite	(int UNU pin, int UNU value)	{ warn_msg(__func__); return; }
-void pwmToneWrite	(int UNU pin, int UNU freq)	{ warn_msg(__func__); return; }
 void digitalWriteByte2	(const int UNU value)	{ warn_msg(__func__); return; }
 unsigned int digitalReadByte2 (void)		{ warn_msg(__func__); return -1; }
 
@@ -1093,6 +1127,12 @@ int wiringPiSetup (void)
 			break;
 		case MODEL_BANANAPI_CM5BPICM4IO:
 			init_bananapicm5bpicm4io(&libwiring);
+			break;
+		case MODEL_BANANAPI_M4BERRY:
+			init_bananapim4berry(&libwiring);
+			break;
+		case MODEL_BANANAPI_M4ZERO:
+			init_bananapim4zero(&libwiring);
 			break;
 		default:
 			return wiringPiFailure (WPI_ALMOST, "wiringPiSetup: Unknown model\n");

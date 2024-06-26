@@ -67,6 +67,7 @@ char *usage = "Usage: gpio -v\n"
 	"       gpio export/edge/unexport ...\n"
 	"       gpio wfi <pin> <mode>\n"
 	"       gpio drive <pin> <value>\n"
+	"       gpio pwm-bal/pwm-ms \n"
 	"       gpio pwmr <range> \n"
 	"       gpio pwmc <divider> \n"
 	"       gpio load spi/i2c\n"
@@ -215,6 +216,12 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 		case MODEL_BANANAPI_CM5IO:
 		case MODEL_BANANAPI_CM5BPICM4IO:
 			port = 5;
+			break;
+		case MODEL_BANANAPI_M4BERRY:
+			port = 4;
+			break;
+		case MODEL_BANANAPI_M4ZERO:
+			port = 0;
 			break;
 		default:
 			break;
@@ -566,6 +573,7 @@ void doMode (int argc, char *argv [])
 	else if (strcasecmp (mode, "out")     == 0) pinMode         (pin, OUTPUT) ;
 	else if (strcasecmp (mode, "output")  == 0) pinMode         (pin, OUTPUT) ;
 	else if (strcasecmp (mode, "pwm")     == 0) pinMode         (pin, PWM_OUTPUT) ;
+	else if (strcasecmp (mode, "pwmTone") == 0) pinMode         (pin, PWM_TONE_OUTPUT) ;
 	else if (strcasecmp (mode, "up")      == 0) pullUpDnControl (pin, PUD_UP) ;
 	else if (strcasecmp (mode, "down")    == 0) pullUpDnControl (pin, PUD_DOWN) ;
 	else if (strcasecmp (mode, "tri")     == 0) pullUpDnControl (pin, PUD_OFF) ;
@@ -763,6 +771,28 @@ void doBlink (int argc, char *argv [])
 }
 
 /*
+ *  * doPwmTone:
+ *   *	Output a tone in a PWM pin
+ *    *********************************************************************************
+ *     */
+
+void doPwmTone (int argc, char *argv [])
+{
+  int pin, freq ;
+
+  if (argc != 4)
+  {
+    fprintf (stderr, "Usage: %s pwmTone <pin> <freq>\n", argv [0]) ;
+    exit (1) ;
+  }
+
+  pin = atoi (argv [2]) ;
+  freq = atoi (argv [3]) ;
+
+  pwmToneWrite (pin, freq) ;
+}
+
+/*
  * doPwm:
  *	Output a PWM value on a pin
  *********************************************************************************
@@ -783,6 +813,16 @@ void doPwm (int argc, char *argv [])
 	pwmWrite (pin, val) ;
 }
 
+/*
+ * doPwmMode: doPwmRange: doPwmClock:
+ *      Change the PWM mode, range and clock divider values
+ *********************************************************************************
+ */
+
+static void doPwmMode (int mode)
+{
+  pwmSetMode (mode) ;
+}
 
 /*
  * doPwmRange: doPwmClock:
@@ -1041,8 +1081,11 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1], "blink"  ) == 0) doBlink     (argc, argv) ;
 
 	// Pi Specifics
+	else if (strcasecmp (argv [1], "pwm-bal"  ) == 0) doPwmMode    (PWM_MODE_BAL) ;
+	else if (strcasecmp (argv [1], "pwm-ms"   ) == 0) doPwmMode    (PWM_MODE_MS) ;
 	else if (strcasecmp (argv [1], "pwmr"     ) == 0) doPwmRange   (argc, argv) ;
 	else if (strcasecmp (argv [1], "pwmc"     ) == 0) doPwmClock   (argc, argv) ;
+	else if (strcasecmp (argv [1], "pwmTone"  ) == 0) doPwmTone    (argc, argv) ;
 	else if (strcasecmp (argv [1], "drive"    ) == 0) doDrive      (argc, argv) ;
 	else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    (argc, argv) ;
 	else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    (argc, argv) ;

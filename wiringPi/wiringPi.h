@@ -51,9 +51,12 @@
 #define MODEL_BANANAPI_RPICM4   5
 #define MODEL_BANANAPI_CM5IO	6
 #define MODEL_BANANAPI_CM5BPICM4IO	7
+#define MODEL_BANANAPI_M4BERRY	8
+#define MODEL_BANANAPI_M4ZERO	9
 
 #define	MAKER_UNKNOWN		0
 #define	MAKER_AMLOGIC		1
+#define MAKER_ALLWINNER		2
 
 // rename wiringPi modes
 #define	MODE_PINS		0
@@ -81,6 +84,11 @@
 #define	PUD_OFF			0
 #define	PUD_DOWN		1
 #define	PUD_UP			2
+
+// PWM
+
+#define	PWM_MODE_MS		0
+#define	PWM_MODE_BAL		1
 
 // Interrupt levels
 #define	INT_EDGE_SETUP		0
@@ -136,6 +144,8 @@ struct libWiringpi
 	unsigned int (*digitalReadByte)	(void);
 	void	(*pwmSetRange)		(unsigned int range);
 	void	(*pwmSetClock)		(int divisor);
+	void	(*pwmSetMode)		(int mode);
+	int		(*pwmToneWrite)		(int pin, int freq);
 
 	/* ISR Function pointer */
 	void 	(*isrFunctions[256])(void);
@@ -286,6 +296,8 @@ extern		int  physPinToGpio	(int physPin);
 
 extern		void pwmSetRange	(unsigned int range);
 extern		void pwmSetClock	(int divisor);
+extern		void pwmSetMode		(int mode);
+extern		void pwmToneWrite	(int pin, int freq);
 
 // Interrupt
 extern		int  waitForInterrupt	(int pin, int mS);
@@ -309,7 +321,6 @@ extern unsigned int  micros		(void);
 // Unsupoorted
 extern		void pinModeAlt		(int pin, int mode) UNU;
 extern		void analogWrite	(int pin, int value) UNU;
-extern		void pwmToneWrite	(int pin, int freq) UNU;
 extern		void gpioClockSet	(int pin, int freq) UNU;
 extern		unsigned int  digitalReadByte	(void) UNU;
 extern		unsigned int  digitalReadByte2	(void) UNU;

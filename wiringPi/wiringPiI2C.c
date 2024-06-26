@@ -244,6 +244,7 @@ int wiringPiI2CSetup (const int devId)
 	switch(model)	{
 		case MODEL_BANANAPI_M5:
 		case MODEL_BANANAPI_M2PRO:
+		case MODEL_BANANAPI_M4ZERO:
 			device = "/dev/i2c-0";
 			break;
 		case MODEL_BANANAPI_M2S:
@@ -254,6 +255,11 @@ int wiringPiI2CSetup (const int devId)
 		case MODEL_BANANAPI_CM5IO:
 		case MODEL_BANANAPI_CM5BPICM4IO:
 			device = "/dev/i2c-5";
+			break;
+		case MODEL_BANANAPI_M4BERRY:
+			device = "/dev/i2c-4";
+			break;
+		default:
 			break;
 	}
 

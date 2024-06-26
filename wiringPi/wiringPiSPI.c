@@ -39,7 +39,7 @@
 //	Variables as they need to be passed as pointers later on
 
 static const char       *spiDevType0    = "/dev/spidev0.";
-//static const char       *spiDevType1    = "/dev/spidev1.";
+static const char       *spiDevType1    = "/dev/spidev1.";
 static const char       *spiDevType3    = "/dev/spidev3.";
 
 static const uint8_t     spiBPW         = 8;
@@ -152,6 +152,12 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 		case MODEL_BANANAPI_CM5IO:
 		case MODEL_BANANAPI_CM5BPICM4IO:
 			sprintf(device, "%s%d", spiDevType3, channel);
+			break;
+		case MODEL_BANANAPI_M4BERRY:
+		case MODEL_BANANAPI_M4ZERO:
+			sprintf(device, "%s%d", spiDevType1, channel);
+			break;
+		default:
 			break;
 	}
 
