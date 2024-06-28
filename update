@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# update - update source files from master on yakko
-
-git pull https://github.com/Dangku/wiringPi HEAD

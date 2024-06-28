@@ -3,7 +3,7 @@ Section: electronics
 Priority: optional
 Maintainer: Dangku <dangku@sinovoip.com>
 Standards-Version: 3.8.0
-Homepage: http://wiringpi.com/
+Homepage: https://github.com/Dangku/WiringPi
 Build-Depends: debhelper (>= 8)
 
 Package: libwiringpi2

@@ -2,7 +2,7 @@
 # Makefile:
 #	The gpio command:
 #	  A swiss-army knige of GPIO shenanigans.
-#	https://projects.drogon.net/wiring-pi
+#	https://github.com/wiringPi/wiringPi
 #
 #	Copyright (c) 2012-2016 Gordon Henderson
 #################################################################################
@@ -25,7 +25,6 @@
 
 DESTDIR?=/usr
 PREFIX?=/local
-DEBTEMPDIR?=../
 
 ifneq ($V,1)
 Q ?= @
@@ -33,9 +32,9 @@ endif
 
 #DEBUG	= -g -O0
 DEBUG	= -O2
-CC	= gcc
+CC	?= gcc
 INCLUDE	= -I$(DESTDIR)$(PREFIX)/include
-CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe
+CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe $(EXTRA_CFLAGS)
 
 LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
 LIBS    = -lwiringPi -lpthread -lrt -lm -lcrypt
@@ -73,6 +72,7 @@ tags:	$(SRC)
 .PHONY:	install
 install: gpio
 	$Q echo "[Install]"
+	$Q mkdir -p		$(DESTDIR)$(PREFIX)/bin
 	$Q cp gpio		$(DESTDIR)$(PREFIX)/bin
 ifneq ($(WIRINGPI_SUID),0)
 	$Q chown root.root	$(DESTDIR)$(PREFIX)/bin/gpio
@@ -81,13 +81,19 @@ endif
 	$Q mkdir -p		$(DESTDIR)$(PREFIX)/share/man/man1
 	$Q cp gpio.1		$(DESTDIR)$(PREFIX)/share/man/man1
 
+.PHONY: check-deb-destdir
+check-deb-destdir:
+ifndef DEB_DESTDIR
+	$(error DEB_DESTDIR is undefined)
+endif
+
 .PHONY:	install-deb
-install-deb:	gpio
+install-deb:	gpio check-deb-destdir
 	$Q echo "[Install: deb]"
-	$Q install -m 0755 -d		$(DEBTEMPDIR)/debian-template/wiringPi/usr/bin
-	$Q install -m 0755 gpio		$(DEBTEMPDIR)/debian-template/wiringPi/usr/bin
-	$Q install -m 0755 -d		$(DEBTEMPDIR)/debian-template/wiringPi/usr/share/man/man1
-	$Q install -m 0644 gpio.1	$(DEBTEMPDIR)/debian-template/wiringPi/usr/share/man/man1
+	$Q install -m 0755 -d							$(DEB_DESTDIR)/usr/bin
+	$Q install -m 0755 gpio							$(DEB_DESTDIR)/usr/bin
+	$Q install -m 0755 -d							$(DEB_DESTDIR)/usr/share/man/man1
+	$Q install -m 0644 gpio.1						$(DEB_DESTDIR)/usr/share/man/man1
 
 .PHONY:	uninstall
 uninstall:

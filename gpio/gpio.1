@@ -53,7 +53,7 @@ high | low
 range
 .PP
 .B gpio
-.B load \ i2c/spi ...
+.B i2cd
 .PP
 .B gpio
 .B gbr
@@ -72,8 +72,7 @@ converters on the Gertboard. It's designed for simple testing and
 diagnostic purposes, but can be used in shell scripts for general if
 somewhat slow control of the GPIO pins.
 
-It can also control the IO's on the PiFace IO board and load the SPI and I2C
-kernel modules if required.
+It can also control the IO's on the PiFace IO board.
 
 Additionally, it can be used to set the exports in the \fI/sys/class/gpio\fR
 system directory to allow subsequent programs to use the \fR/sys/class/gpio\fR
@@ -103,7 +102,6 @@ BCM_GPIO pin numbers are always used with the export and edge commands.
 This causes the named extension to be initialised. Extensions
 comprise of a name (e.g. mcp23017) followed by a colon, then the
 pin-base, then more optional parameters depending on the extension type.
-See the web page on http://wiringpi.com/the-gpio-utility/
 
 .TP
 .B \-p
@@ -260,6 +258,8 @@ Change the PWM mode to balanced (the default) or mark:space ratio (traditional)
 Change the PWM range register. The default is 1024.
 
 .TP
+.B i2cd
+Executes i2c-detect for the default I2C port on the P1 connector.
 
 .TP
 .B gbr
@@ -327,21 +327,22 @@ in future releases once the /dev/gpiomem interface is fully operational.
 .SH "SEE ALSO"
 
 .LP
-WiringPi's home page
+WiringPi's development
 .IP
-http://wiringpi.com/
+https://github.com/WiringPi/WiringPi/
 
 .SH AUTHOR
 
-Gordon Henderson
+Gordon Henderson and contributors
 
 .SH "REPORTING BUGS"
 
-Please report bugs to <projects@drogon.net>
+Please report bugs to https://github.com/WiringPi/WiringPi/issues
 
 .SH COPYRIGHT
 
-Copyright (c) 2012-2018 Gordon Henderson
+Copyright (c) 2012-2024 Gordon Henderson and contributors
+.br
 This is free software; see the source for copying conditions. There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 

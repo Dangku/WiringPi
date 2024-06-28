@@ -1,17 +1,17 @@
 /*
- * lcd-bpi.c:
+ * lcd-adafruit-bpi.c:
  *	Text-based LCD driver test code
  *	This is designed to drive the Bananapi RGB LCD Plate
  *	with the additional 5 buttons for the Bananapi
  * 
- * 	Must enable i2c0 overlays in boot.ini for bananapi m5
+ * 	Must enable i2c overlays in bootscript
  *
  *	http://wiki.banana-pi.org/BPI_LCD_1602_display_module
  *
  * Copyright (c) 2012-2013 Gordon Henderson.
  ***********************************************************************
  * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
+ *	https://github.com/WiringPi/WiringPi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as published by

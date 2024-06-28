@@ -3,7 +3,7 @@
  * Bananapi BerryClip Module
  * http://wiki.banana-pi.org/BPI_BerryClip_Module
  *
- * Must disable dts overlays in boot.ini for bananapi m5
+ * Must disable dts overlays in bootscript
  */
 
 #include <stdio.h>

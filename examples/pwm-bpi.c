@@ -1,3 +1,10 @@
+/*
+ * matrixled-bpi.c
+ * Bananapi Pwm Expansion Module
+ *
+ * Must disable overlays in bootscript
+ */
+
 #include <wiringPi.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,10 +1,13 @@
 Package: wiringpi
-Version: 2.50
+Version: $VERSION
 Section: libraries
 Priority: optional
-Architecture: arm64
+Architecture: $ARCH
 Depends: libc6
 Maintainer: Dangku <dangku@sinovoip.com>
 Description: The wiringPi libraries, headers and gpio command
   Libraries to allow GPIO access on a Bananapi from C and C++
   and BASIC programs as well as from the command-line
+Homepage: https://github.com/Dangku/WiringPi
+Bugs: https://github.com/Dangku/WiringPi/issues
+

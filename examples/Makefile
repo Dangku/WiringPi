@@ -1,7 +1,7 @@
 #
 # Makefile:
 #	wiringPi - A "wiring" library for the Raspberry Pi
-#	https://projects.drogon.net/wiring-pi
+#	https://github.com/wiringPi/wiringPi
 #
 #	Copyright (c) 2012-2015 Gordon Henderson
 #################################################################################
@@ -28,9 +28,9 @@ endif
 
 #DEBUG	= -g -O0
 DEBUG	= -O3
-CC	= gcc
+CC	?= gcc
 INCLUDE	= -I/usr/local/include
-CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
+CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe $(EXTRA_CFLAGS)
 
 LDFLAGS	= -L/usr/local/lib
 LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
@@ -38,7 +38,7 @@ LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
 # Should not alter anything below this line
 ###############################################################################
 
-SRC	=	blink.c blink-bpi.c blink8.c blink12.c				\
+SRC	=	blink.c blink8.c blink12.c					\
 		blink12drcs.c							\
 		pwm.c								\
 		speed.c wfi.c isr.c isr-osc.c					\
@@ -49,8 +49,8 @@ SRC	=	blink.c blink-bpi.c blink8.c blink12.c				\
 		lowPower.c							\
 		max31855.c							\
 		rht03.c								\
-		blinkall-bpi.c lcd-bpi.c 52pi-bpi.c matrixled-bpi.c		\
-		berryclip-bpi.c pwm-bpi.c
+		blink-bpi.c blinkall-bpi.c lcd-adafruit-bpi.c 52pi-bpi.c 	\
+		matrixled-bpi.c berryclip-bpi.c pwm-bpi.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -66,14 +66,6 @@ really-all:	$(BINS)
 blink:	blink.o
 	$Q echo [link]
 	$Q $(CC) -o $@ blink.o $(LDFLAGS) $(LDLIBS)
-
-blink-bpi: blink-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ blink-bpi.o $(LDFLAGS) $(LDLIBS)
-
-blinkall-bpi: blinkall-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ blinkall-bpi.o $(LDFLAGS) $(LDLIBS)
 
 blink8:	blink8.o
 	$Q echo [link]
@@ -98,10 +90,6 @@ lcd:	lcd.o
 lcd-adafruit:	lcd-adafruit.o
 	$Q echo [link]
 	$Q $(CC) -o $@ lcd-adafruit.o $(LDFLAGS) $(LDLIBS)
-
-lcd-bpi:   lcd-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ lcd-bpi.o $(LDFLAGS) $(LDLIBS)
 
 clock:	clock.o
 	$Q echo [link]
@@ -130,10 +118,6 @@ rht03:	rht03.o
 pwm:	pwm.o
 	$Q echo [link]
 	$Q $(CC) -o $@ pwm.o $(LDFLAGS) $(LDLIBS)
-
-pwm-bpi:	pwm-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ pwm-bpi.o $(LDFLAGS) $(LDLIBS)
 
 softPwm:	softPwm.o
 	$Q echo [link]
@@ -170,6 +154,22 @@ ds1302:	ds1302.o
 max31855:	max31855.o
 	$Q echo [link]
 	$Q $(CC) -o $@ max31855.o $(LDFLAGS) $(LDLIBS)
+
+pwm-bpi:	pwm-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ pwm-bpi.o $(LDFLAGS) $(LDLIBS)
+
+lcd-adafruit-bpi:   lcd-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ lcd-bpi.o $(LDFLAGS) $(LDLIBS)
+
+blink-bpi: blink-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ blink-bpi.o $(LDFLAGS) $(LDLIBS)
+
+blinkall-bpi: blinkall-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ blinkall-bpi.o $(LDFLAGS) $(LDLIBS)
 
 52pi-bpi:       52pi-bpi.o
 	$Q echo [link]

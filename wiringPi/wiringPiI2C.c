@@ -1,10 +1,10 @@
 /*
  * wiringPiI2C.c:
  *	Simplified I2C access routines
- *	Copyright (c) 2013 Gordon Henderson
+ *	Copyright (c) 2013-2024 Gordon Henderson and contributors
  ***********************************************************************
  * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
+ *	https://github.com/WiringPi/WiringPi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as

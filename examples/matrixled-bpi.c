@@ -1,9 +1,9 @@
 /*
- * 52pi-bpi.c
- * Bananapi OLED Display Module
- * http://wiki.banana-pi.org/BPI_OLED_Display_Module
+ * matrixled-bpi.c
+ * Bananapi RGB LED Matrix Expansion Module
+ * http://wiki.banana-pi.org/BPI_RGB_LED_Matrix_Expansion_Module
  *
- * Must disable spi0 overlays in boot.ini for bananapi m5
+ * Must disable overlays in bootscript
  */
 
 #include <stdio.h>

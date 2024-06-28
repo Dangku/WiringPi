@@ -3,7 +3,7 @@
  * Bananapi OLED Display Module
  * http://wiki.banana-pi.org/BPI_OLED_Display_Module
  *
- * Must enable spi0 overlays in boot.ini for bananapi m5
+ * Must enable spiX overlays in bootscript
  */
 
 #include <wiringPi.h>  

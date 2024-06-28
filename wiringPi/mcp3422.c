@@ -6,7 +6,7 @@
  *	Copyright (c) 2013-2016 Gordon Henderson
  ***********************************************************************
  * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
+ *	https://github.com/WiringPi/WiringPi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as
@@ -30,8 +30,6 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <string.h>
-#include <errno.h>
 
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -45,17 +43,20 @@
  *********************************************************************************
  */
 
-void waitForConversion (int fd, unsigned char *buffer, int n)
+void waitForConversion(int fd, unsigned char *buffer, int n)
 {
-  for (;;)
-  {
-    if (read(fd, buffer, n) < 0) {
-      fprintf(stderr, "Unable to read from the file descriptor: %s \n", strerror(errno));
+    for (;;) {
+        ssize_t bytes_read = read(fd, buffer, n);
+        if (bytes_read != n) {
+            perror("Error reading from file descriptor");
+            return;
+        }
+        
+        if ((buffer[n - 1] & 0x80) == 0)
+            break;
+        
+        delay(1);
     }
-    if ((buffer [n-1] & 0x80) == 0)
-      break ;
-    delay (1) ;
-  }
 }
 
 /*
@@ -74,7 +75,7 @@ int myAnalogRead (struct wiringPiNodeStruct *node, int chan)
 // One-shot mode, trigger plus the other configs.
 
   config = 0x80 | (realChan << 5) | (node->data0 << 2) | (node->data1) ;
-
+  
   wiringPiI2CWrite (node->fd, config) ;
 
   switch (node->data0)	// Sample rate

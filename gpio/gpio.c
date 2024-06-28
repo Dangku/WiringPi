@@ -2,10 +2,10 @@
  * gpio.c:
  *	Swiss-Army-Knife, Set-UID command-line interface to the Raspberry
  *	Pi's GPIO.
- *	Copyright (c) 2012-2018 Gordon Henderson
+ *	Copyright (c) 2012-2024 Gordon Henderson and contributors
  ***********************************************************************
  * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
+ *	https://github.com/WiringPi/WiringPi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as published by
@@ -71,8 +71,6 @@ char *usage = "Usage: gpio -v\n"
 	"       gpio pwm-bal/pwm-ms \n"
 	"       gpio pwmr <range> \n"
 	"       gpio pwmc <divider> \n"
-	"       gpio load spi/i2c\n"
-	"       gpio unload spi/i2c\n"
 	"       gpio i2cd/i2cdetect\n"
 	"       gpio rbx/rbd\n"
 	"       gpio wb <value>\n";
@@ -889,13 +887,13 @@ static void doVersion (char *argv [])
 
 	wiringPiVersion (&vMaj, vMin) ;
 	printf ("gpio version: %d.%s\n", vMaj, *vMin) ;
-	printf ("Copyright (c) 2012-2018 Gordon Henderson, 2017-2020 Bananapi.\n") ;
+	printf ("Copyright (c) 2012-2024 Gordon Henderson and contributors\n") ;
 	printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
 	printf ("For details type: %s -warranty\n", argv [0]) ;
 	printf ("\n") ;
 	piBoardId (&model, &rev, &mem, &maker, &warranty) ;
 
-	printf ("Bananapi Board Details:\n") ;
+	printf ("Hardware details:\n") ;
 	printf ("  Type: %s, Revision: %s, Memory: %dMB\n" \
 	        "  Maker: %s, Chip-Vendor: %s\n",
 		piModelNames [model],
@@ -908,6 +906,7 @@ static void doVersion (char *argv [])
 	printf("  * Current devices' kernel version: %s\n", kernelVersion->release);
 
 	// Check for device tree
+	printf ("\nSystem details:\n") ;
 	if (stat ("/proc/device-tree", &statBuf) == 0)	// We're on a devtree system ...
 		printf ("  * Device tree is enabled.\n") ;
 
@@ -919,7 +918,7 @@ static void doVersion (char *argv [])
 			if (fgets (name, 80, fd) == NULL)
 				fprintf(stderr, "Unable to read from the file descriptor: %s \n", strerror(errno));
 			fclose (fd) ;
-			printf ("  * %s\n", name) ;
+      		printf ("      Model: %s\n", name) ;
 		}
 	}
 
@@ -927,7 +926,7 @@ static void doVersion (char *argv [])
 	if (stat ("/dev/gpiomem", &statBuf) == 0)
 		printf ("  * Supports user-level GPIO access.\n") ;
 	else
-		printf ("  * Root or sudo required for GPIO access.\n") ;
+		printf ("  * Root or sudo required for direct GPIO access.\n") ;
 }
 
 
@@ -979,7 +978,7 @@ int main (int argc, char *argv [])
 	if (strcasecmp (argv [1], "-warranty") == 0)
 	{
 		printf ("gpio version: %s\n", VERSION) ;
-		printf ("Copyright (c) 2012-2018 Gordon Henderson, 2017-2020 Bananapi.\n") ;
+		printf ("Copyright (c) 2012-2024 Gordon Henderson and contributors\n") ;
 		printf ("\n") ;
 		printf ("    This program is free software; you can redistribute it and/or modify\n") ;
 		printf ("    it under the terms of the GNU Leser General Public License as published\n") ;

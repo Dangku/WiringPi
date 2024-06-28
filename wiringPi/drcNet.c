@@ -4,7 +4,7 @@
  *	Copyright (c) 2016-2017 Gordon Henderson
  ***********************************************************************
  * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
+ *	https://github.com/WiringPi/WiringPi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as
@@ -76,12 +76,12 @@ static int remoteReadline (int fd, char *buf, int max)
 
 static char *getChallenge (int fd)
 {
-  static char buf [1024] ;
+  static char buf [512] ;
   int num ;
 
   for (;;)
   {
-    if ((num = remoteReadline (fd, buf, 1023)) < 0)
+    if ((num = remoteReadline (fd, buf, 511)) < 0)
       return NULL ;
     buf [num] = 0 ;
 
@@ -109,7 +109,7 @@ static int authenticate (int fd, const char *pass)
   if ((challenge = getChallenge (fd)) == NULL)
     return -1 ;
 
-  snprintf (salted, 1024, "$6$%s$", challenge) ;
+  sprintf (salted, "$6$%s$", challenge) ;
   encrypted = crypt (pass, salted) ;
   
 // This is an assertion, or sanity check on my part...
