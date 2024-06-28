@@ -240,6 +240,49 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 
 
 /*
+ * doWfi:
+ *	gpio wfi pin mode
+ *	Wait for Interrupt on a given pin.
+ *	Slight cheat here - it's easier to actually use ISR now (which calls
+ *	gpio to set the pin modes!) then we simply sleep, and expect the thread
+ *	to exit the program. Crude but effective.
+ *********************************************************************************
+ */
+static void wfi (void)
+	{ exit (0) ; }
+
+void doWfi (int argc, char *argv [])
+{
+	int pin, mode ;
+
+	if (argc != 4)
+	{
+		fprintf (stderr, "Usage: %s wfi pin mode\n", argv [0]) ;
+		exit (1) ;
+	}
+
+	pin  = atoi (argv [2]) ;
+
+	if      (strcasecmp (argv [3], "rising")  == 0)	mode = INT_EDGE_RISING ;
+	else if (strcasecmp (argv [3], "falling") == 0)	mode = INT_EDGE_FALLING ;
+	else if (strcasecmp (argv [3], "both")    == 0)	mode = INT_EDGE_BOTH ;
+	else
+	{
+		fprintf (stderr, "%s: wfi: Invalid mode: %s. Should be rising, falling or both\n", argv [1], argv [3]) ;
+		exit (1) ;
+	}
+
+	if (wiringPiISR (pin, mode, &wfi) < 0)
+	{
+		fprintf (stderr, "%s: wfi: Unable to setup ISR: %s\n", argv [1], strerror (errno)) ;
+		exit (1) ;
+	}
+
+	for (;;)
+		delay (9999) ;
+}
+
+/*
  * doExports:
  *	List all GPIO exports
  *********************************************************************************
@@ -252,7 +295,7 @@ static void doExports (UNU int argc, UNU char *argv [])
 	char buf [16] ;
 
 	// Crude, but effective
-	for (first = 0, i = 0 ; i < 256 ; ++i)
+	for (first = 0, i = 0 ; i < 600 ; ++i)
 	{
 		// Try to read the direction
 		sprintf (fName, "/sys/class/gpio/gpio%d/direction", i) ;
@@ -373,51 +416,6 @@ void doExport (int argc, char *argv [])
 	changeOwner (argv [0], fName) ;
 }
 
-
-/*
- * doWfi:
- *	gpio wfi pin mode
- *	Wait for Interrupt on a given pin.
- *	Slight cheat here - it's easier to actually use ISR now (which calls
- *	gpio to set the pin modes!) then we simply sleep, and expect the thread
- *	to exit the program. Crude but effective.
- *********************************************************************************
- */
-static void wfi (void)
-	{ exit (0) ; }
-
-void doWfi (int argc, char *argv [])
-{
-	int pin, mode ;
-
-	if (argc != 4)
-	{
-		fprintf (stderr, "Usage: %s wfi pin mode\n", argv [0]) ;
-		exit (1) ;
-	}
-
-	pin  = atoi (argv [2]) ;
-
-	if      (strcasecmp (argv [3], "rising")  == 0)	mode = INT_EDGE_RISING ;
-	else if (strcasecmp (argv [3], "falling") == 0)	mode = INT_EDGE_FALLING ;
-	else if (strcasecmp (argv [3], "both")    == 0)	mode = INT_EDGE_BOTH ;
-	else
-	{
-		fprintf (stderr, "%s: wfi: Invalid mode: %s. Should be rising, falling or both\n", argv [1], argv [3]) ;
-		exit (1) ;
-	}
-
-	if (wiringPiISR (pin, mode, &wfi) < 0)
-	{
-		fprintf (stderr, "%s: wfi: Unable to setup ISR: %s\n", argv [1], strerror (errno)) ;
-		exit (1) ;
-	}
-
-	for (;;)
-		delay (9999) ;
-}
-
-
 /*
  * doEdge:
  *	gpio edge pin mode
@@ -434,7 +432,7 @@ void doEdge (int argc, char *argv [])
 	char fName [128] ;
 
 	// Reset gpio sysfs
-	doUnexport(3, argv);
+	//doUnexport(3, argv);
 
 	if (argc != 4)
 	{
@@ -535,7 +533,7 @@ void doUnexportall (char *progName)
 	FILE *fd ;
 	int pin ;
 
-	for (pin = 0 ; pin < 256 ; ++pin)
+	for (pin = 0 ; pin < 600 ; ++pin)
 	{
 		if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
 		{
@@ -882,11 +880,10 @@ static void doVersion (char *argv [])
 	char name [80] ;
 	FILE *fd ;
 
-	int vMaj;
-	char *vMin[32];
+	int vMaj, vMin ;
 
-	wiringPiVersion (&vMaj, vMin) ;
-	printf ("gpio version: %d.%s\n", vMaj, *vMin) ;
+	wiringPiVersion (&vMaj, &vMin) ;
+	printf ("gpio version: %d.%d\n", vMaj, vMin) ;
 	printf ("Copyright (c) 2012-2024 Gordon Henderson and contributors\n") ;
 	printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
 	printf ("For details type: %s -warranty\n", argv [0]) ;
@@ -895,38 +892,41 @@ static void doVersion (char *argv [])
 
 	printf ("Hardware details:\n") ;
 	printf ("  Type: %s, Revision: %s, Memory: %dMB\n" \
-	        "  Maker: %s, Chip-Vendor: %s\n",
-		piModelNames [model],
-		piRevisionNames [rev],
-		piMemorySize [mem],
-		"Bananapi",
-		piMakerNames [maker]);
-
-	// Show current kernel version
-	printf("  * Current devices' kernel version: %s\n", kernelVersion->release);
+			"  Maker: %s, Chip-Vendor: %s\n",
+			piModelNames [model],
+			piRevisionNames [rev],
+			piMemorySize [mem],
+			"Bananapi",
+			piMakerNames [maker]);
 
 	// Check for device tree
 	printf ("\nSystem details:\n") ;
-	if (stat ("/proc/device-tree", &statBuf) == 0)	// We're on a devtree system ...
-		printf ("  * Device tree is enabled.\n") ;
+
+	// Show current kernel version
+	printf("  Kernel version: %s\n", kernelVersion->release);
+
+	if (stat ("/proc/device-tree", &statBuf) == 0) {	// We're on a devtree system ...
+		printf ("  Device tree present.\n") ;
+	}
 
 	// Output Kernel idea of board type
 	if (stat ("/proc/device-tree/model", &statBuf) == 0)
 	{
 		if ((fd = fopen ("/proc/device-tree/model", "r")) != NULL)
 		{
-			if (fgets (name, 80, fd) == NULL)
-				fprintf(stderr, "Unable to read from the file descriptor: %s \n", strerror(errno));
+			if (fgets (name, sizeof(name), fd) == NULL) {
+				fprintf(stderr, "Error reading /proc/device-tree/model: %s \n", strerror(errno));
+			}
 			fclose (fd) ;
-      		printf ("      Model: %s\n", name) ;
+			printf ("  Model: %s\n", name) ;
 		}
 	}
 
 	// User level GPIO is GO
 	if (stat ("/dev/gpiomem", &statBuf) == 0)
-		printf ("  * Supports user-level GPIO access.\n") ;
+		printf ("  Supports user-level GPIO access.\n") ;
 	else
-		printf ("  * Root or sudo required for direct GPIO access.\n") ;
+		printf ("  Root or sudo required for direct GPIO access.\n") ;
 }
 
 
@@ -949,7 +949,10 @@ int main (int argc, char *argv [])
 
 	if (argc == 1)
 	{
-		fprintf (stderr, "%s\n", usage) ;
+		fprintf (stderr,
+			"%s: At your service!\n"
+			"  Type: gpio -h for full details and\n"
+			"        gpio readall for a quick printout of your connector details\n", argv [0]) ;
 		exit (EXIT_FAILURE) ;
 	}
 

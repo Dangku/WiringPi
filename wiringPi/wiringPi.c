@@ -1072,7 +1072,7 @@ struct wiringPiNodeStruct *wiringPiNewNode (int pinBase, int numPins)
 	return node ;
 }
 
-void wiringPiVersion (int *major, char **minor)
+void wiringPiVersion (int *major, int *minor)
 {
 	*major = VERSION_MAJOR ;
 	*minor = VERSION_MINOR ;

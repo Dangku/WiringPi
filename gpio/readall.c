@@ -78,7 +78,7 @@ static const char *sunxi_alts[] =
 
 static const char* GetAltString(int alt) 
 {
-	int model, rev, mem, maker, overVolted, isAll;
+	int model, rev, mem, maker, overVolted;
 
 	piBoardId (&model, &rev, &mem, &maker, &overVolted);
 

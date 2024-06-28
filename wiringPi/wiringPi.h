@@ -269,7 +269,7 @@ extern		void setKernelVersion	(void);
 extern		char cmpKernelVersion	(int num, ...);
 
 // Core WiringPi functions
-extern		void wiringPiVersion	(int *major, char **minor);
+extern		void wiringPiVersion	(int *major, int *minor) ;
 extern		int  wiringPiSetup	(void);
 extern		int  wiringPiSetupSys	(void);
 extern		int  wiringPiSetupGpio	(void);

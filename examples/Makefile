@@ -159,9 +159,9 @@ pwm-bpi:	pwm-bpi.o
 	$Q echo [link]
 	$Q $(CC) -o $@ pwm-bpi.o $(LDFLAGS) $(LDLIBS)
 
-lcd-adafruit-bpi:   lcd-bpi.o
+lcd-adafruit-bpi:   lcd-adafruit-bpi.o
 	$Q echo [link]
-	$Q $(CC) -o $@ lcd-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ lcd-adafruit-bpi.o $(LDFLAGS) $(LDLIBS)
 
 blink-bpi: blink-bpi.o
 	$Q echo [link]
