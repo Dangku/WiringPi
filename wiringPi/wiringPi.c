@@ -113,7 +113,7 @@ const int piMemorySize [8] =
 static pthread_mutex_t pinMutex ;
 
 // Debugging & Return codes
-int wiringPiDebug       = TRUE ;
+int wiringPiDebug       = FALSE ;
 int wiringPiReturnCodes = FALSE ;
 int wiringPiSetuped     = FALSE ;
 

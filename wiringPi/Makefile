@@ -79,13 +79,9 @@ OBJ	=	$(SRC:.c=.o)
 
 all:		$(DYNAMIC)
 
-static:		$(STATIC)
-
-$(STATIC):	$(OBJ)
-	$Q echo "[Link (Static)]"
-	$Q ar rcs $(STATIC) $(OBJ)
-	$Q ranlib $(STATIC)
-#	@size   $(STATIC)
+.PHONY:	static
+static:	
+		$Q cat noMoreStatic
 
 $(DYNAMIC):	$(OBJ)
 	$Q echo "[Link (Dynamic)]"
@@ -117,15 +113,6 @@ install:	$(DYNAMIC)
 	$Q install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
 	$Q ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)	$(DESTDIR)/lib/libwiringPi.so
 	$Q $(LDCONFIG)
-
-.PHONY:	install-static
-install-static:	$(STATIC)
-	$Q echo "[Install Headers]"
-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/include
-	$Q install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
-	$Q echo "[Install Static Lib]"
-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
-	$Q install -m 0755 libwiringPi.a				$(DESTDIR)$(PREFIX)/lib
 
 .PHONY:	install-deb
 install-deb:	$(DYNAMIC)

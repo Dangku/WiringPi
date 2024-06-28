@@ -2,7 +2,7 @@
  * gpio.c:
  *	Swiss-Army-Knife, Set-UID command-line interface to the Raspberry
  *	Pi's GPIO.
- *	Copyright (c) 2012-2017 Gordon Henderson
+ *	Copyright (c) 2012-2018 Gordon Henderson
  ***********************************************************************
  * This file is part of wiringPi:
  *	https://projects.drogon.net/raspberry-pi/wiringpi/
@@ -41,6 +41,7 @@ extern int wiringPiDebug ;
 // External functions I can't be bothered creating a separate .h file for:
 extern void doReadall    (int argc, char *argv []);
 extern void doAllReadall (void) ;
+extern void doQmode      (int argc, char *argv []) ;
 extern void doUnexport   (int argc, char *agrv []);
 
 #ifndef TRUE
@@ -60,7 +61,7 @@ char *usage = "Usage: gpio -v\n"
 	"       gpio [-g|-1] ...\n"
 	"       gpio [-d] ...\n"
 	"       gpio [-p] <read/write/wb> ...\n"
-	"       gpio <read/write/aread/pwm/clock/mode> ...\n"
+	"       gpio <read/write/aread/pwm/clock/mode/qmode> ...\n"
 	"       gpio <toggle/blink> <pin>\n"
 	"       gpio readall [-a|--all]\n"
 	"       gpio unexportall/exports\n"
@@ -888,7 +889,7 @@ static void doVersion (char *argv [])
 
 	wiringPiVersion (&vMaj, vMin) ;
 	printf ("gpio version: %d.%s\n", vMaj, *vMin) ;
-	printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Bananapi.\n") ;
+	printf ("Copyright (c) 2012-2018 Gordon Henderson, 2017-2020 Bananapi.\n") ;
 	printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
 	printf ("For details type: %s -warranty\n", argv [0]) ;
 	printf ("\n") ;
@@ -950,14 +951,14 @@ int main (int argc, char *argv [])
 	if (argc == 1)
 	{
 		fprintf (stderr, "%s\n", usage) ;
-		return 1 ;
+		exit (EXIT_FAILURE) ;
 	}
 
 	// Help
 	if (strcasecmp (argv [1], "-h") == 0)
 	{
 		printf ("%s: %s\n", argv [0], usage) ;
-		return 0 ;
+		exit (EXIT_SUCCESS) ;
 	}
 
 	// Version & Warranty
@@ -965,20 +966,20 @@ int main (int argc, char *argv [])
 	if ((strcmp (argv [1], "-R") == 0) || (strcmp (argv [1], "-V") == 0))
 	{
 		printf ("%d\n", piGpioLayout ()) ;
-		return 0 ;
+		exit (EXIT_SUCCESS) ;
 	}
 
 	// Version and information
 	if (strcmp (argv [1], "-v") == 0)
 	{
 		doVersion (argv) ;
-		return 0 ;
+		exit (EXIT_SUCCESS) ;
 	}
 
 	if (strcasecmp (argv [1], "-warranty") == 0)
 	{
 		printf ("gpio version: %s\n", VERSION) ;
-		printf ("Copyright (c) 2012-2017 Gordon Henderson, 2017-2020 Bananapi.\n") ;
+		printf ("Copyright (c) 2012-2018 Gordon Henderson, 2017-2020 Bananapi.\n") ;
 		printf ("\n") ;
 		printf ("    This program is free software; you can redistribute it and/or modify\n") ;
 		printf ("    it under the terms of the GNU Leser General Public License as published\n") ;
@@ -993,13 +994,13 @@ int main (int argc, char *argv [])
 		printf ("    You should have received a copy of the GNU Lesser General Public License\n") ;
 		printf ("    along with this program. If not, see <http://www.gnu.org/licenses/>.\n") ;
 		printf ("\n") ;
-		return 0 ;
+		exit (EXIT_SUCCESS) ;
 	}
 
 	if (geteuid () != 0 && stat("/dev/gpiomem", &statBuf) != 0)
 	{
 		fprintf (stderr, "%s: Must be root to run. Program should be suid root. This is an error.\n", argv [0]) ;
-		return 1 ;
+		exit (EXIT_FAILURE) ;
 	}
 
 	// Initial test for /sys/class/gpio operations:
@@ -1089,6 +1090,7 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1], "drive"    ) == 0) doDrive      (argc, argv) ;
 	else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    (argc, argv) ;
 	else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    (argc, argv) ;
+	else if (strcasecmp (argv [1], "qmode"    ) == 0) doQmode      (argc, argv) ;
 	else if (strcasecmp (argv [1], "i2cdetect") == 0) doI2Cdetect  (argc, argv) ;
 	else if (strcasecmp (argv [1], "i2cd"     ) == 0) doI2Cdetect  (argc, argv) ;
 	else if (strcasecmp (argv [1], "wb"       ) == 0) doWriteByte  (argc, argv) ;

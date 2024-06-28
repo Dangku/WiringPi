@@ -186,6 +186,8 @@ clean() {
   cd ../scrollPhat
   echo -n "scrollPhat: "	; $make clean
   cd ../..
+  echo -n "Deb: " ; rm  -f debian-template/wiringpi*.deb
+  echo
 }
 
 if [ x$1 = "xclean" ]; then

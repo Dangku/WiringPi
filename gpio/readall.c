@@ -64,10 +64,46 @@ static void doReadallExternal (void)
 	printf ("+------+---------+--------+\n") ;
 }
 
-static const char *alts [] =
+
+static const char unknown_alt[] = " - ";
+static const char *aml_alts [] =
 {
 	"IN", "OUT", "ALT1", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7"
-} ;
+};
+
+static const char *sunxi_alts[] =
+{
+	"IN", "OUT", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7"
+};
+
+static const char* GetAltString(int alt) 
+{
+	int model, rev, mem, maker, overVolted, isAll;
+
+	piBoardId (&model, &rev, &mem, &maker, &overVolted);
+
+	if (alt>=0 && alt<=11) {
+		switch (model) {
+			case MODEL_BANANAPI_M5:
+				case MODEL_BANANAPI_M2PRO:
+				case MODEL_BANANAPI_M2S:
+				case MODEL_BANANAPI_CM4:
+				case MODEL_BANANAPI_RPICM4:
+				case MODEL_BANANAPI_CM5IO:
+				case MODEL_BANANAPI_CM5BPICM4IO:
+					return aml_alts[alt];
+					break;
+				case MODEL_BANANAPI_M4BERRY:
+				case MODEL_BANANAPI_M4ZERO:
+					return sunxi_alts[alt];
+					break;
+				default:
+					break;
+		}
+  }
+
+  return unknown_alt;
+}
 
 static const char *pupd [] =
 {
@@ -599,7 +635,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 		else
 			pin = physToWpi [physPin];
 
-		printf (" | %4s", alts [getAlt (pin)]) ;
+		printf (" | %4s", GetAltString(getAlt (pin))) ;
 		printf (" | %d", digitalRead (pin)) ;
 
 		// GPIO pin drive strength, pu/pd
@@ -661,7 +697,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			}
 		}
 		printf(" | %d", digitalRead (pin));
-		printf(" | %-4s", alts [getAlt (pin)]);
+		printf (" | %-4s", GetAltString(getAlt (pin))) ;
 	}
 
 	// GPIO pin name
@@ -837,4 +873,25 @@ void doAllReadall(void) {
 	char *fakeArgv[3] = { "", "", "--all" };
 
 	doReadall(3, fakeArgv);
+}
+
+
+/*
+ * doQmode:
+ *	Query mode on a pin
+ *********************************************************************************
+ */
+
+void doQmode (int argc, char *argv [])
+{
+  int pin ;
+
+  if (argc != 3)
+  {
+    fprintf (stderr, "Usage: %s qmode pin\n", argv [0]) ;
+    exit (EXIT_FAILURE) ;
+  }
+
+  pin = atoi (argv [2]) ;
+  printf ("%s\n", GetAltString(getAlt (pin))) ;
 }
