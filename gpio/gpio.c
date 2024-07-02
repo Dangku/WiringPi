@@ -1063,7 +1063,7 @@ int main (int argc, char *argv [])
 	// Check for allreadall command, force Gpio mode
 	if (strcasecmp (argv [1], "allreadall") == 0)
 	{
-		wiringPiSetupGpio () ;
+		wiringPiSetup () ;
 		doAllReadall      () ;
 		return 0 ;
 	}
