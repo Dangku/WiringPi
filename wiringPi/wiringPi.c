@@ -498,6 +498,20 @@ int physPinToGpio (int physPin)
 }
 
 /*
+ * getPinMax:
+ * get the max gpio pin number 
+ */
+int getPinMax (void)
+{
+	setupCheck(__func__);
+
+	if (libwiring.pinMax > 0)
+		return libwiring.pinMax;
+
+	return 256;
+}
+
+/*
  * setDrive:
  *	Set the pin driver value
  */
@@ -1080,17 +1094,13 @@ void wiringPiVersion (int *major, int *minor)
 
 int wiringPiSetup (void)
 {
-	int i;
-
 	if (wiringPiSetuped)
 		return 0;
 	wiringPiSetuped = TRUE;
 
 	// libwiring init
 	memset(&libwiring, 0x00, sizeof(struct libWiringpi));
-	// sysFds init
-	for(i = 0; i < 256; i++)
-		libwiring.sysFds[i] = -1;
+
 	// init wiringPi mode
 	libwiring.mode = MODE_UNINITIALISED;
 	libwiring.usingGpiomem = FALSE;
@@ -1193,7 +1203,7 @@ int wiringPiSetupPhys (void)
  */
 int wiringPiSetupSys (void)
 {
-	int pin ;
+	int pin, pinMax ;
 	char fName [128] ;
 
 	(void)wiringPiSetup();
@@ -1203,8 +1213,8 @@ int wiringPiSetupSys (void)
 
 	// Open and scan the directory, looking for exported GPIOs, and pre-open
 	//	the 'value' interface to speed things up for later
-
-	for (pin = 0 ; pin < 256 ; ++pin)
+	pinMax = getPinMax();
+	for (pin = 0 ; pin < pinMax ; ++pin)
 	{
 		sprintf (fName, "/sys/class/gpio/gpio%d/value", pin);
 		libwiring.sysFds [pin] = open (fName, O_RDWR);

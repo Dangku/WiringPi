@@ -884,6 +884,7 @@ void init_bananapim5 (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= M5_GPIO_PIN_BASE;
+	libwiring->pinMax		= M5_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

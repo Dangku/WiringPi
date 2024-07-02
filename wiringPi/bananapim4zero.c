@@ -758,6 +758,7 @@ void init_bananapim4zero (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= M4Z_GPIO_PIN_BASE;
+	libwiring->pinMax		= M4Z_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

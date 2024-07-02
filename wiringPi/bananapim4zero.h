@@ -10,6 +10,7 @@
 #define M4Z_GPIO_BASE			0x0300B000
 #define M4Z_GPIO_PIN_BASE		0
 #define M4Z_GPIO_PIN_END		319
+#define M4Z_GPIO_PIN_MAX		320
 
 /*
 * reg		reg offset	pin offset	bits

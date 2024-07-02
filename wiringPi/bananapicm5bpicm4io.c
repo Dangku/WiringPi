@@ -706,6 +706,7 @@ void init_bananapicm5bpicm4io (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= CM5_GPIO_PIN_BASE;
+	libwiring->pinMax		= CM5_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

@@ -884,6 +884,7 @@ void init_bananapim2s (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= M2S_GPIO_PIN_BASE;
+	libwiring->pinMax		= M2S_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

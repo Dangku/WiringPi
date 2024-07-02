@@ -293,9 +293,12 @@ static void doExports (UNU int argc, UNU char *argv [])
 	int i, l, first ;
 	char fName [128] ;
 	char buf [16] ;
+	int pinMax;
 
 	// Crude, but effective
-	for (first = 0, i = 0 ; i < 600 ; ++i)
+	wiringPiSetup();
+	pinMax = getPinMax();
+	for (first = 0, i = 0 ; i < pinMax ; ++i)
 	{
 		// Try to read the direction
 		sprintf (fName, "/sys/class/gpio/gpio%d/direction", i) ;
@@ -531,9 +534,11 @@ void doUnexport (int argc, char *argv [])
 void doUnexportall (char *progName)
 {
 	FILE *fd ;
-	int pin ;
+	int pin, pinMax ;
 
-	for (pin = 0 ; pin < 600 ; ++pin)
+	wiringPiSetup();
+	pinMax = getPinMax();
+	for (pin = 0 ; pin < pinMax ; ++pin)
 	{
 		if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
 		{

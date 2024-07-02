@@ -13,7 +13,8 @@
 #define CM5_GPIO_PWM_BASE		0xFE05C000    //PWM_EF
 
 #define CM5_GPIO_PIN_BASE		355
-#define CM5_GPIO_PWM_F_PIN		492			
+#define CM5_GPIO_PWM_F_PIN		492
+#define CM5_GPIO_PIN_MAX		512
 
 #define CM5_GPIOB_PIN_START            (CM5_GPIO_PIN_BASE + 0)
 #define CM5_GPIOB_PIN_END            (CM5_GPIO_PIN_BASE + 12)

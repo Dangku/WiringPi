@@ -873,6 +873,7 @@ void init_bananapicm4 (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= CM4_GPIO_PIN_BASE;
+	libwiring->pinMax		= CM4_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

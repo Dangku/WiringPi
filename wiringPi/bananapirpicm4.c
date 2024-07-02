@@ -884,6 +884,7 @@ void init_bananapirpicm4 (struct libWiringpi *libwiring)
 
 	/* specify pin base number */
 	libwiring->pinBase		= RPICM4_GPIO_PIN_BASE;
+	libwiring->pinMax		= RPICM4_GPIO_PIN_MAX;
 
 	/* global variable setup */
 	lib = libwiring;

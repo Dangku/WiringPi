@@ -33,7 +33,7 @@
 #endif
 
 #define	UNU			__attribute__((unused))
-#define PIN_NUM_CALC_SYSFD(X)	(X > 255 ? X - libwiring.pinBase : X)
+#define PIN_NUM_CALC_SYSFD(X)	(X)
 
 #define	ENV_DEBUG		"WIRINGPI_DEBUG"
 #define	ENV_CODES		"WIRINGPI_CODES"
@@ -157,6 +157,9 @@ struct libWiringpi
 	/* GPIO pin base number */
 	int	pinBase;
 
+	/* GPIO pin max number */
+	int pinMax;
+
 	/* Running with gpiomem */
 	char	usingGpiomem;
 
@@ -275,6 +278,7 @@ extern		int  wiringPiSetupSys	(void);
 extern		int  wiringPiSetupGpio	(void);
 extern		int  wiringPiSetupPhys	(void);
 
+extern		int  getPinMax		(void);
 extern		void setDrive		(int pin, int value);
 extern		int  getDrive		(int pin);
 extern		int  getAlt		(int pin);
