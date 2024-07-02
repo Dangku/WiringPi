@@ -50,7 +50,7 @@ SRC	=	blink.c blink8.c blink12.c					\
 		max31855.c							\
 		rht03.c								\
 		blink-bpi.c blinkall-bpi.c lcd-adafruit-bpi.c 52pi-bpi.c 	\
-		matrixled-bpi.c berryclip-bpi.c pwm-bpi.c
+		matrixled-bpi.c berryclip-bpi.c pwm-bpi.c wfi-bpi.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -182,6 +182,10 @@ matrixled-bpi:       matrixled-bpi.o
 berryclip-bpi:       berryclip-bpi.o
 	$Q echo [link]
 	$Q $(CC) -o $@ berryclip-bpi.o $(LDFLAGS) $(LDLIBS)
+
+wfi-bpi:       wfi-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ wfi-bpi.o $(LDFLAGS) $(LDLIBS)
 
 .c.o:
 	$Q echo [CC] $<

@@ -148,11 +148,11 @@ struct libWiringpi
 	int		(*pwmToneWrite)		(int pin, int freq);
 
 	/* ISR Function pointer */
-	void 	(*isrFunctions[256])(void);
-	pthread_t isrThreadIds[256];
+	void 	(*isrFunctions[512])(void);
+	pthread_t isrThreadIds[512];
 
 	/* GPIO sysfs file discripter */
-	int 	sysFds[256];
+	int 	sysFds[512];
 
 	/* GPIO pin base number */
 	int	pinBase;
@@ -306,7 +306,8 @@ extern		void pwmToneWrite	(int pin, int freq);
 // Interrupt
 extern		int  waitForInterrupt	(int pin, int mS);
 extern		int  wiringPiISR	(int pin, int mode, void (*function)(void));
-extern		int  wiringPiISRCancel	(int pin);
+extern		int  wiringPiISRStop     (int pin) ;  //V3.2
+extern		int  waitForInterruptClose(int pin) ; //V3.2
 
 // Threads
 extern		int  piThreadCreate	(void *(*fn)(void *));

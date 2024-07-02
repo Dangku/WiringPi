@@ -874,7 +874,7 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
 	return 0 ;
 }
 
-int wiringPiISRCancel(int pin) {
+int waitForInterruptClose(int pin) {
 	int GpioPin = -1;
 
 	if (libwiring.mode == MODE_UNINITIALISED)
@@ -906,6 +906,10 @@ int wiringPiISRCancel(int pin) {
 	}
 
 	return 0;
+}
+
+int wiringPiISRStop (int pin) {
+	return waitForInterruptClose (pin);
 }
 
 static void initialiseEpoch (void)
@@ -1094,8 +1098,12 @@ void wiringPiVersion (int *major, int *minor)
 
 int wiringPiSetup (void)
 {
+	int i, pinMax;
+	char fName[128];
+
 	if (wiringPiSetuped)
 		return 0;
+
 	wiringPiSetuped = TRUE;
 
 	// libwiring init
@@ -1152,6 +1160,11 @@ int wiringPiSetup (void)
 	}
 
 	initialiseEpoch ();
+
+	// sysFds init
+	pinMax = getPinMax();
+	for(i = 0; i < pinMax; i++)
+		libwiring.sysFds[i] = -1;
 
 	libwiring.mode = MODE_PINS;
 	return 0;

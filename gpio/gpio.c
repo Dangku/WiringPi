@@ -37,6 +37,7 @@
 #include "../version.h"
 
 extern int wiringPiDebug ;
+int gpioDebug ;
 
 // External functions I can't be bothered creating a separate .h file for:
 extern void doReadall    (int argc, char *argv []);
@@ -248,12 +249,39 @@ static void doI2Cdetect (UNU int argc, char *argv [])
  *	to exit the program. Crude but effective.
  *********************************************************************************
  */
-static void wfi (void)
-	{ exit (0) ; }
+
+static volatile int iterations ;
+static volatile int globalCounter ;
+
+void printgpioflush(const char* text) {
+	if (gpioDebug) {
+		printf("%s", text);
+		fflush(stdout);
+	}
+}
+
+void printgpio(const char* text) {
+	if (gpioDebug) {
+		printf("%s", text);
+	}
+}
+
+static void wfi (void) {
+	globalCounter++;
+	if(globalCounter>=iterations) {
+		printgpio("finished\n");
+		exit (0) ;
+	} else {
+		printgpioflush("I");
+	}
+}
 
 void doWfi (int argc, char *argv [])
 {
 	int pin, mode ;
+
+	iterations = 1;
+	globalCounter = 0;
 
 	if (argc != 4)
 	{
@@ -278,8 +306,14 @@ void doWfi (int argc, char *argv [])
 		exit (1) ;
 	}
 
-	for (;;)
+	printgpio("wait for interrupt function call\n");
+	for (;;) {
+		printgpioflush(".");
 		delay (9999) ;
+	}
+
+	printgpio("\nstopping wait for interrupt\n");
+	wiringPiISRStop (pin);
 }
 
 /*
@@ -950,6 +984,11 @@ int main (int argc, char *argv [])
 	{
 		printf ("gpio: wiringPi debug mode enabled\n") ;
 		wiringPiDebug = TRUE ;
+	}
+	if (getenv ("GPIO_DEBUG") != NULL)
+	{
+		printf ("gpio: gpio debug mode enabled\n") ;
+		gpioDebug = TRUE ;
 	}
 
 	if (argc == 1)
