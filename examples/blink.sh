@@ -23,7 +23,7 @@
 #    along with wiringPi.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-# LED Pin - wiringPi pin 0 is BCM_GPIO 17.
+# LED Pin - wiringPi pin 0 is BCM_GPIO 17, phy 11.
 
 PIN=0
 

@@ -119,6 +119,7 @@ double DurationTime(int Enge, int OUTpin, int IRQpin) {
 
 int main (void)
 {
+  //short phy pin 31 and 37
   const int IRQpin = 22 ;
   const int OUTpin = 25 ;
   int major, minor;
@@ -127,7 +128,7 @@ int main (void)
 
   printf("\nISR test (WiringPi %d.%d)\n", major, minor);
 
-  wiringPiSetupGpio() ;
+  wiringPiSetup() ;
 
   pinMode(IRQpin, INPUT);
   pinMode(OUTpin, OUTPUT);

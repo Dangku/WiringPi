@@ -60,7 +60,7 @@ void speedTest (int pin, int maxCount)
 
 int main (void)
 {
-  printf ("Raspberry Pi wiringPi GPIO speed test program\n") ;
+  printf ("Bananapi wiringPi GPIO speed test program\n") ;
   printf ("=============================================\n") ;
 
 // Start the standard way
@@ -74,8 +74,8 @@ int main (void)
 
   printf ("\nNative GPIO method: (%8d iterations)\n", FAST_COUNT) ;
   wiringPiSetupGpio () ;
-  pinMode (17, OUTPUT) ;
-  speedTest (17, FAST_COUNT) ;
+  pinMode (259, OUTPUT) ;
+  speedTest (259, FAST_COUNT) ;
 
 // Phys
 
@@ -86,16 +86,16 @@ int main (void)
 
 // Switch to SYS mode: -> character device ABI
 
-  printf ("\n/sys/class/gpio method: (%8d iterations)\n", SLOW_COUNT) ;
-  wiringPiSetupSys () ;
-  speedTest (17, SLOW_COUNT) ;
+  //printf ("\n/sys/class/gpio method: (%8d iterations)\n", SLOW_COUNT) ;
+  //wiringPiSetupSys () ;
+  //speedTest (259, SLOW_COUNT) ;
 
 // character device ABI
 
-  printf ("\ncharacter device ABI method: (%8d iterations)\n", SLOW_COUNT) ;
-  wiringPiSetupGpioDevice () ;
-  pinMode (17, OUTPUT) ;
-  speedTest (17, SLOW_COUNT) ;
+  //printf ("\ncharacter device ABI method: (%8d iterations)\n", SLOW_COUNT) ;
+  //wiringPiSetupGpioDevice () ;
+  //pinMode (17, OUTPUT) ;
+  //speedTest (17, SLOW_COUNT) ;
 
 
   return 0 ;

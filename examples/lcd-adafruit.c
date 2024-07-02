@@ -1,8 +1,12 @@
 /*
- * lcd-adafruit.c:
+ * lcd-adafruit-bpi.c:
  *	Text-based LCD driver test code
- *	This is designed to drive the Adafruit RGB LCD Plate
- *	with the additional 5 buttons for the Raspberry Pi
+ *	This is designed to drive the Bananapi RGB LCD Plate
+ *	with the additional 5 buttons for the Bananapi
+ * 
+ * 	Must enable i2c overlays in bootscript
+ *
+ *	http://wiki.banana-pi.org/BPI_LCD_1602_display_module
  *
  * Copyright (c) 2012-2013 Gordon Henderson.
  ***********************************************************************
@@ -43,24 +47,26 @@
 // Defines for the Adafruit Pi LCD interface board
 
 #define	AF_BASE		100
-#define	AF_RED		(AF_BASE + 6)
-#define	AF_GREEN	(AF_BASE + 7)
-#define	AF_BLUE		(AF_BASE + 8)
+#define	AF_GREEN	(AF_BASE + 13)
+#define	AF_RED		(AF_BASE + 14)
+#define	AF_BLUE		(AF_BASE + 15)
 
-#define	AF_E		(AF_BASE + 13)
-#define	AF_RW		(AF_BASE + 14)
-#define	AF_RS		(AF_BASE + 15)
+#define	AF_E		(AF_BASE + 2)
+#define	AF_RW		(AF_BASE + 1)
+#define	AF_RS		(AF_BASE + 0)
 
-#define	AF_DB4		(AF_BASE + 12)
-#define	AF_DB5		(AF_BASE + 11)
-#define	AF_DB6		(AF_BASE + 10)
-#define	AF_DB7		(AF_BASE +  9)
+#define	AF_DA3		(AF_BASE + 3)
+#define	AF_DA4		(AF_BASE + 4)
+#define	AF_DA5		(AF_BASE + 5)
+#define	AF_DA6		(AF_BASE + 6)
 
-#define	AF_SELECT	(AF_BASE +  0)
-#define	AF_RIGHT	(AF_BASE +  1)
-#define	AF_DOWN		(AF_BASE +  2)
-#define	AF_UP		(AF_BASE +  3)
-#define	AF_LEFT		(AF_BASE +  4)
+#define AF_BL		(AF_BASE + 7)
+
+#define	AF_SELECT	(AF_BASE +  8)
+#define	AF_RIGHT	(AF_BASE +  9)
+#define	AF_DOWN		(AF_BASE +  10)
+#define	AF_UP		(AF_BASE +  11)
+#define	AF_LEFT		(AF_BASE +  12)
 
 
 // User-Defined character test
@@ -100,7 +106,7 @@ int usage (const char *progName)
 
 static const char *message =
   "                    "
-  "Wiring Pi by Gordon Henderson. HTTP://WIRINGPI.COM/"
+  "Wiring Pi by Bananapi. https://github.com/Dangku/WiringPi"
   "                    " ;
 
 void scrollMessage (int line, int width)
@@ -151,16 +157,20 @@ static void adafruitLCDSetup (int colour)
 {
   int i ;
 
-//	Backlight LEDs
+//	RGB LEDs
 
   pinMode (AF_RED,   OUTPUT) ;
   pinMode (AF_GREEN, OUTPUT) ;
   pinMode (AF_BLUE,  OUTPUT) ;
   setBacklightColour (colour) ;
 
+//  backlight
+  pinMode (AF_BL, OUTPUT);
+  digitalWrite(AF_BL, HIGH);
+
 //	Input buttons
 
-  for (i = 0 ; i <= 4 ; ++i)
+  for (i = 8 ; i <= 12 ; ++i)
   {
     pinMode (AF_BASE + i, INPUT) ;
     pullUpDnControl (AF_BASE + i, PUD_UP) ;	// Enable pull-ups, switches close to 0v
@@ -172,7 +182,7 @@ static void adafruitLCDSetup (int colour)
 
 // The other control pins are initialised with lcdInit ()
 
-  lcdHandle = lcdInit (2, 16, 4, AF_RS, AF_E, AF_DB4,AF_DB5,AF_DB6,AF_DB7, 0,0,0,0) ;
+  lcdHandle = lcdInit (2, 16, 4, AF_RS, AF_E, AF_DA3,AF_DA4,AF_DA5,AF_DA6, 0,0,0,0) ;
 
   if (lcdHandle < 0)
   {
@@ -190,14 +200,28 @@ static void adafruitLCDSetup (int colour)
 
 static void waitForEnter (void)
 {
+#if 0 /* hardware issue */
+  int pin;
   printf ("Press SELECT to continue: ") ; fflush (stdout) ;
+
+  while(1)
+  {
+  	for(pin = 108; pin < 113; pin++)
+  	{
+		printf("pin[%d] is %s\n", pin, digitalRead(pin) ? "HIGH" : "LOW");
+  	}
+	delay(1000);
+	printf("--------------------------------\n");
+  }
 
   while (digitalRead (AF_SELECT) == HIGH)	// Wait for push
     delay (1) ;
 
   while (digitalRead (AF_SELECT) == LOW)	// Wait for release
     delay (1) ;
-
+#else
+  delay(2000);
+#endif
   printf ("OK\n") ;
 }
 
@@ -266,10 +290,13 @@ int main (int argc, char *argv[])
 
   colour = atoi (argv [1]) ;
 
-  wiringPiSetupSys () ;
+  wiringPiSetup () ;
   mcp23017Setup (AF_BASE, 0x20) ;
 
   adafruitLCDSetup (colour) ;
+
+  lcdHome(lcdHandle);
+  lcdClear(lcdHandle);
 
   lcdPosition (lcdHandle, 0, 0) ; lcdPuts (lcdHandle, "  Hello World   ") ;
   lcdPosition (lcdHandle, 0, 1) ; lcdPuts (lcdHandle, "    wiringpi    ") ;

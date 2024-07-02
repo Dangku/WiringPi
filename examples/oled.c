@@ -1,5 +1,5 @@
 /*
- * 52pi-bpi.c
+ * oled.c
  * Bananapi OLED Display Module
  * http://wiki.banana-pi.org/BPI_OLED_Display_Module
  *

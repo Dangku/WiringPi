@@ -30,8 +30,7 @@
 #include <time.h>
 #include <wiringPi.h>
 
-
-#define	LOW_POWER	35
+#define	LOW_POWER	259
 
 /*
  * lowPower:
@@ -57,7 +56,7 @@ void lowPower (void)
 
 int main (void)
 {
-  wiringPiSetupGpio () ;	// GPIO mode as it's an internal pin
+  wiringPiSetup () ;	// GPIO mode as it's an internal pin
 
   wiringPiISR (LOW_POWER, INT_EDGE_FALLING, &lowPower) ;
 

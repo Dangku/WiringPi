@@ -78,7 +78,7 @@ int main (void)
   int dataPtr ;
   int l, s, d ;
 
-  printf ("Raspberry Pi - 12-LED Sequence\n") ;
+  printf ("Bananapi - 12-LED Sequence\n") ;
   printf ("==============================\n") ;
   printf ("\n") ;
   printf ("Connect LEDs up to the first 8 GPIO pins, then pins 11, 10, 13, 12 in\n") ;

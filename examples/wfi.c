@@ -4,7 +4,7 @@
  *
  *	This program demonstrates the use of the waitForInterrupt()
  *	function in wiringPi. It listens to a button input on
- *	BCM_GPIO pin 17 (wiringPi pin 0)
+ *	Bananapi GPIO pin number
  *
  *	The biggest issue with this method is that it really only works
  *	well in Sys mode.
@@ -44,7 +44,7 @@
 
 // What BCM_GPIO input are we using?
 
-#define	BUTTON_PIN	17
+#define	BUTTON_PIN	259
 
 // Debounce time in mS
 
@@ -116,7 +116,8 @@ void setup (void)
 // Use the gpio program to initialise the hardware
 //	(This is the crude, but effective)
 
-  system ("gpio edge 17 falling") ;
+  // Pull down before set edge for h618
+  system ("gpio edge 259 falling") ;
 
 // Setup wiringPi
 

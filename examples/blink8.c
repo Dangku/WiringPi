@@ -30,7 +30,7 @@ int main (void)
 {
   int i, led ;
 
-  printf ("Raspberry Pi - 8-LED Sequencer\n") ;
+  printf ("Bananapi - 8-LED Sequencer\n") ;
   printf ("==============================\n") ;
   printf ("\n") ;
   printf ("Connect LEDs to the first 8 GPIO pins and watch ...\n") ;

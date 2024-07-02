@@ -49,8 +49,7 @@ SRC	=	blink.c blink8.c blink12.c					\
 		lowPower.c							\
 		max31855.c							\
 		rht03.c								\
-		blink-bpi.c blinkall-bpi.c lcd-adafruit-bpi.c 52pi-bpi.c 	\
-		matrixled-bpi.c berryclip-bpi.c pwm-bpi.c wfi-bpi.c
+		blinkall.c oled.c matrixled.c berryclip.c pwm-test.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -155,37 +154,25 @@ max31855:	max31855.o
 	$Q echo [link]
 	$Q $(CC) -o $@ max31855.o $(LDFLAGS) $(LDLIBS)
 
-pwm-bpi:	pwm-bpi.o
+pwm-test:	pwm-test.o
 	$Q echo [link]
-	$Q $(CC) -o $@ pwm-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ pwm-test.o $(LDFLAGS) $(LDLIBS)
 
-lcd-adafruit-bpi:   lcd-adafruit-bpi.o
+blinkall: blinkall.o
 	$Q echo [link]
-	$Q $(CC) -o $@ lcd-adafruit-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ blinkall.o $(LDFLAGS) $(LDLIBS)
 
-blink-bpi: blink-bpi.o
+oled:       oled.o
 	$Q echo [link]
-	$Q $(CC) -o $@ blink-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ oled.o $(LDFLAGS) $(LDLIBS)
 
-blinkall-bpi: blinkall-bpi.o
+matrixled:       matrixled.o
 	$Q echo [link]
-	$Q $(CC) -o $@ blinkall-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ matrixled.o $(LDFLAGS) $(LDLIBS)
 
-52pi-bpi:       52pi-bpi.o
+berryclip:       berryclip.o
 	$Q echo [link]
-	$Q $(CC) -o $@ 52pi-bpi.o $(LDFLAGS) $(LDLIBS)
-
-matrixled-bpi:       matrixled-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ matrixled-bpi.o $(LDFLAGS) $(LDLIBS)
-
-berryclip-bpi:       berryclip-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ berryclip-bpi.o $(LDFLAGS) $(LDLIBS)
-
-wfi-bpi:       wfi-bpi.o
-	$Q echo [link]
-	$Q $(CC) -o $@ wfi-bpi.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ berryclip.o $(LDFLAGS) $(LDLIBS)
 
 .c.o:
 	$Q echo [CC] $<

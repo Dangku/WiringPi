@@ -44,7 +44,7 @@ PI_THREAD (blinky)
 
 int main (void)
 {
-  printf ("Raspberry Pi blink\n") ;
+  printf ("Bananapi blink\n") ;
 
   wiringPiSetup () ;
   pinMode (LED, OUTPUT) ;
