@@ -1099,7 +1099,6 @@ void wiringPiVersion (int *major, int *minor)
 int wiringPiSetup (void)
 {
 	int i, pinMax;
-	char fName[128];
 
 	if (wiringPiSetuped)
 		return 0;
