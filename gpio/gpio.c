@@ -197,7 +197,8 @@ static void doUnLoad (int UNU argc, char *argv [])
  */
 static void doI2Cdetect (UNU int argc, char *argv [])
 {
-	int model, rev, mem, maker, overVolted, port;
+	int model, rev, mem, maker, overVolted;
+	int port = -1;
 	char *c, *command ;
 
 	piBoardId(&model, &rev, &mem, &maker, &overVolted);

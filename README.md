@@ -86,16 +86,16 @@ You can either build it yourself or use the prebuilt binaries:
 
 ```sh
 # fetch the source
-sudo apt install git
+sudo apt install gettext-base fakeroot git
 git clone https://github.com/Dangku/WiringPi.git
 cd WiringPi
 
 # build the package
 ./build debian
-mv debian-template/wiringpi-3.0-1.deb .
+mv debian-template/wiringpi_3.6_arm64.deb /tmp/
 
 # install it
-sudo apt install ./wiringpi-3.0-1.deb
+sudo apt install /tmp/wiringpi_3.6_arm64.deb
 ```
 
 
@@ -108,14 +108,14 @@ Unzip/use the portable prebuilt verison:
 
 ```sh
 # unzip the archive
-tar -xfv wiringpi_3.0.tar.gz
+tar -xfv wiringpi_3.6.tar.gz
 ```
 
 Install the debian package:
 
 ```sh
 # install a dpkg
-sudo apt install ./wiringpi-3.0-1.deb
+sudo apt install ./wiringpi_3.6_arm64.deb
 ```
 
 
