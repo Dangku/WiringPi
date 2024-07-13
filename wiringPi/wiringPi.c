@@ -57,6 +57,20 @@ const char *piModelNames [16] =
 	"BPI-M4Zero",		// 9
 };
 
+const char *piModelNames_mainline [32] =
+{
+	"Unknown",              // 0
+	"Banana Pi BPI-M5",     // 1
+	"Banana Pi BPI-M2-PRO", // 2
+	"BananaPi M2S",         // 3
+	"BananaPi BPI-CM4IO",   // 4
+	"BananaPi RPI-CM4IO",   // 5
+	"Unknown",              // 6
+	"Unknown",              // 7
+	"BananaPi M4 Berry",    // 8
+	"BananaPi M4 Zero",     // 9
+};
+
 const char *piRevisionNames [16] =
 {
 	"00",
@@ -410,6 +424,16 @@ int piGpioLayout (void) {
 			if (strcasestr(model, modelCodename) != NULL) {
 				libwiring.model = i;
 				break;
+			}
+		}
+
+		//mainline check
+		if (libwiring.model == 0) {
+			for (i = 1; i <= sizeOfAssignedModelNames; i++) {
+				if (strcasestr(piModelNames_mainline[i], modelCodename) != NULL) {
+					libwiring.model = i;
+					break;
+				}
 			}
 		}
 	}
