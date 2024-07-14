@@ -376,8 +376,11 @@ int getModelFromDt(char *line, FILE *dtFd) {
 			printf("piGpioLayout: %s: Hardware: %s\n", __func__, line);
 
 		model = strcasestr(line, "Bananapi");
-		if (!model)
-			return -1;
+		if (!model) {
+			model = strcasestr(line, "Banana Pi");
+			if (!model)
+				return -1;
+		}
 
 		strcpy(line, model);
 		return 0;
@@ -390,7 +393,7 @@ int getModelFromDt(char *line, FILE *dtFd) {
 int piGpioLayout (void) {
 	FILE *cpuFd = NULL, *dtFd = NULL;
 	char line[120];
-	char *model, *modelCodename, *buf, *seps = "\t\n\v\f\r ";
+	char *seps = "\t\n\v\f\r ";
 	int sizeOfAssignedModelNames = 0;
 	int i;
 
@@ -410,32 +413,22 @@ int piGpioLayout (void) {
 		i--;
 	}
 
-	buf = strchr(line, '-');
-	modelCodename = buf != NULL ? buf : strchr(line, ' ');
-	if (modelCodename == NULL) {
-			wiringPiFailure(WPI_FATAL, "** Model string on this board is not well formatted **");
-	} else {
-		modelCodename++;
-
-		libwiring.model = 0;
-		for (i = 1; i <= sizeOfAssignedModelNames; i++) {
-			model = strstr(piModelNames[i], "-");
-
-			if (strcasestr(model, modelCodename) != NULL) {
+	libwiring.model = 0;
+	for (i = 1; i <= sizeOfAssignedModelNames; i++) {
+			if (strcasestr(line, piModelNames[i]) != NULL) {
 				libwiring.model = i;
 				break;
 			}
-		}
+	}
 
-		//mainline check
-		if (libwiring.model == 0) {
+	//mainline check
+	if (libwiring.model == 0) {
 			for (i = 1; i <= sizeOfAssignedModelNames; i++) {
-				if (strcasestr(piModelNames_mainline[i], modelCodename) != NULL) {
+				if (strcasestr(line, piModelNames_mainline[i]) != NULL) {
 					libwiring.model = i;
 					break;
 				}
 			}
-		}
 	}
 
 	switch (libwiring.model) {
