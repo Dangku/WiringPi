@@ -41,34 +41,37 @@
 #include "bananapicm5io.h"
 #include "bananapim4berry.h"
 #include "bananapim4zero.h"
+#include "bananapif3.h"
 
 // Const string define
 const char *piModelNames [16] =
 {
-	"Unknown",		// 0
-	"BPI-M5",		// 1
-	"BPI-M2-Pro",		// 2
-	"BPI-M2S",		// 3 
-	"BPI-CM4",		// 4
-	"BPI-RPICM4",		// 5
-	"BPI-CM5IO",		// 6
-	"BPI-CM5-BPICM4IO",	// 7
-	"BPI-M4Berry",		// 8
-	"BPI-M4Zero",		// 9
+	"Unknown",
+	"BPI-M5",
+	"BPI-M2-Pro",
+	"BPI-M2S",
+	"BPI-CM4",
+	"BPI-RPICM4",
+	"BPI-CM5IO",
+	"BPI-CM5-BPICM4IO",
+	"BPI-M4Berry",
+	"BPI-M4Zero",
+	"k1-x deb1",
 };
 
 const char *piModelNames_mainline [32] =
 {
-	"Unknown",              // 0
-	"Banana Pi BPI-M5",     // 1
-	"Banana Pi BPI-M2-PRO", // 2
-	"BananaPi M2S",         // 3
-	"BananaPi BPI-CM4IO",   // 4
-	"BananaPi RPI-CM4IO",   // 5
-	"Unknown",              // 6
-	"Unknown",              // 7
-	"BananaPi M4 Berry",    // 8
-	"BananaPi M4 Zero",     // 9
+	"Unknown",
+	"Banana Pi BPI-M5",
+	"Banana Pi BPI-M2-PRO",
+	"BananaPi M2S",
+	"BananaPi BPI-CM4IO",
+	"BananaPi RPI-CM4IO",
+	"Unknown",
+	"Unknown",
+	"BananaPi M4 Berry",
+	"BananaPi M4 Zero",
+	"BananaPi BPI-F3",
 };
 
 const char *piRevisionNames [16] =
@@ -93,34 +96,34 @@ const char *piRevisionNames [16] =
 
 const char *piMakerNames [16] =
 {
-	"Unknown",	// 0
-	"Amlogic",	// 1
-	"Allwinner",	// 2
-	"Unknown03",	// 3
-	"Unknown04",	// 4
-	"Unknown05",	// 5
-	"Unknown06",	// 6
-	"Unknown07",	// 7
-	"Unknown08",	// 8
-	"Unknown09",	// 9
-	"Unknown10",	// 10
-	"Unknown11",	// 11
-	"Unknown12",	// 12
-	"Unknown13",	// 13
-	"Unknown14",	// 14
-	"Unknown15",	// 15
+	"Unknown",
+	"Amlogic",
+	"Allwinner",
+	"Spacemit",
+	"Unknown04",
+	"Unknown05",
+	"Unknown06",
+	"Unknown07",
+	"Unknown08",
+	"Unknown09",
+	"Unknown10",
+	"Unknown11",
+	"Unknown12",
+	"Unknown13",
+	"Unknown14",
+	"Unknown15",
 } ;
 
 const int piMemorySize [8] =
 {
-	256,		//	 0
-	512,		//	 1
-	1024,		//	 2
-	2048,		//	 3
-	4096,		//	 4
-	8192,		//	 5
-	0,		//	 6
-	0,		//	 7
+	256,
+	512,
+	1024,
+	2048,
+	4096,
+	8192,
+	16384,
+	32768,
 } ;
 
 // Misc
@@ -451,6 +454,11 @@ int piGpioLayout (void) {
 			case MODEL_BANANAPI_M4ZERO:
 				libwiring.maker = MAKER_ALLWINNER;
 				libwiring.mem = 2;
+				libwiring.rev = 1;
+				break;
+			case MODEL_BANANAPI_F3:
+				libwiring.maker = MAKER_SPACEMIT;
+				libwiring.mem = 5;
 				libwiring.rev = 1;
 				break;
 			case MODEL_UNKNOWN:
@@ -1076,6 +1084,7 @@ struct wiringPiNodeStruct *wiringPiNewNode (int pinBase, int numPins)
 {
 	int	pin ;
 	struct wiringPiNodeStruct *node ;
+	size_t mem_size = sizeof(struct wiringPiNodeStruct);
 
 	// Minimum pin base is 64
 	if (pinBase < 64)
@@ -1086,7 +1095,7 @@ struct wiringPiNodeStruct *wiringPiNewNode (int pinBase, int numPins)
 		if (wiringPiFindNode (pin) != NULL)
 			(void)wiringPiFailure (WPI_FATAL, "wiringPiNewNode: Pin %d overlaps with existing definition\n", pin) ;
 
-	node = (struct wiringPiNodeStruct *)calloc (sizeof (struct wiringPiNodeStruct), 1) ;	// calloc zeros
+	node = (struct wiringPiNodeStruct *)calloc (mem_size, 1) ;	// calloc zeros
 	if (node == NULL)
 		(void)wiringPiFailure (WPI_FATAL, "wiringPiNewNode: Unable to allocate memory: %s\n", strerror (errno)) ;
 
@@ -1170,6 +1179,9 @@ int wiringPiSetup (void)
 			break;
 		case MODEL_BANANAPI_M4ZERO:
 			init_bananapim4zero(&libwiring);
+			break;
+		case MODEL_BANANAPI_F3:
+			init_bananapif3(&libwiring);
 			break;
 		default:
 			return wiringPiFailure (WPI_ALMOST, "wiringPiSetup: Unknown model\n");

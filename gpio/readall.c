@@ -76,6 +76,11 @@ static const char *sunxi_alts[] =
 	"IN", "OUT", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7"
 };
 
+static const char *spacemit_alts[] =
+{
+	"IN", "OUT", "ALT0", "ALT1", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7"
+};
+
 static const char* GetAltString(int alt) 
 {
 	int model, rev, mem, maker, overVolted;
@@ -96,6 +101,9 @@ static const char* GetAltString(int alt)
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
 					return sunxi_alts[alt];
+					break;
+				case MODEL_BANANAPI_F3:
+					return spacemit_alts[alt];
 					break;
 				default:
 					break;
@@ -599,6 +607,54 @@ static const char *physNamesBananapiM4Zero [64] =
         NULL,NULL,NULL,
 };
 
+static const char *physNamesBananapiF3All [64] =
+{
+        NULL,
+
+        "    3.3V", "5V      ",
+        "   SDA.4", "5V      ",
+        "   SCL.4", "GND(0V) ",
+        " GPIO.70", "TxD0    ",
+        " GND(0V)", "RxD0    ",
+        " GPIO.71", "GPIO.74 ",
+        " GPIO.72", "GND(0V) ",
+        " GPIO.73", "GPIO.91 ",
+        "    3.3V", "GPIO.92 ",
+        "    MOSI", "GND(0V) ",
+        "    MISO", "GPIO.49 ",
+        "    SLCK", "SS      ",
+        " GND(0V)", "GPIO.50 ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+};
+
+static const char *physNamesBananapiF3 [64] =
+{
+        NULL,
+
+        "   3.3V", "5V     ",
+        "  SDA.4", "5V     ",
+        "  SCL.4", "0V     ",
+        "  IO.70", "TxD0   ",
+        "     0V", "RxD0   ",
+        "  IO.71", "IO.74  ",
+        "  IO.72", "0V     ",
+        "  IO.73", "IO.91  ",
+        "   3.3V", "IO.92  ",
+        "   MOSI", "0V     ",
+        "   MISO", "IO.49  ",
+        "   SLCK", "SS     ",
+        "     0V", "IO.50  ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+};
+
 static void readallPhys(int model, int UNU rev, int physPin, const char *physNames[], int isAll) {
 	int pin ;
 
@@ -650,6 +706,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_CM5BPICM4IO:
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
+				case MODEL_BANANAPI_F3:
 					printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 					break;
 				default:
@@ -690,6 +747,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_CM5BPICM4IO:
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
+				case MODEL_BANANAPI_F3:
 					printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 					break;
 				default:
@@ -845,6 +903,10 @@ void doReadall(int argc, char *argv[]) {
 			headerName = (isAll == FALSE) ? "- M4Zero -" : "---- Model  BANANAPI-M4ZERO ----";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiM4Zero : physNamesBananapiM4ZeroAll);
 			break;
+		case MODEL_BANANAPI_F3:
+			headerName = (isAll == FALSE) ? "--- F3 ---" : "--- Model  BANANAPI-F3 ---";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiF3 : physNamesBananapiF3All);
+			break;
 		default:
 			printf("Oops - unknown model: %d\n", model);
 			return;
@@ -853,6 +915,7 @@ void doReadall(int argc, char *argv[]) {
 	switch (model) {
 		case MODEL_BANANAPI_CM4:
 		case MODEL_BANANAPI_CM5BPICM4IO:
+		case MODEL_BANANAPI_F3:
 			printHeader((const char *) headerName, isAll);
 			printBodyBananapiCM4(model, rev, (const char **) physNames, isAll);
 			printHeader((const char *) headerName, isAll);

@@ -20,6 +20,9 @@ case "$1" in
 				*m4berry|*m4zero)
 					cp -f /tmp/wiringpi/rules.d/99-wiringpi-sunxi.rules /etc/udev/rules.d/
 					;;
+				*f3)
+					cp -f udev/rules.d/99-wiringpi-spacemit.rules /etc/udev/rules.d/
+					;;
 				*)
 					msg "This system seems not Bananapi"
 					;;

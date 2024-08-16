@@ -257,6 +257,7 @@ int wiringPiI2CSetup (const int devId)
 			device = "/dev/i2c-5";
 			break;
 		case MODEL_BANANAPI_M4BERRY:
+		case MODEL_BANANAPI_F3:
 			device = "/dev/i2c-4";
 			break;
 		default:

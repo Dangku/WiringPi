@@ -1,0 +1,2 @@
+# /dev/gpiomem
+SUBSYSTEM=="spacemit-gpiomem", GROUP="pi", MODE="0660"
