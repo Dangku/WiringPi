@@ -369,8 +369,6 @@ int getModelFromCpuinfo(char *line, FILE *cpuFd) {
 }
 
 int getModelFromDt(char *line, FILE *dtFd) {
-	char *model;
-
 	if ((dtFd = fopen("/proc/device-tree/model", "r")) != NULL) {
 		if (fgets(line, 120, dtFd) == NULL)
 			return -1;
@@ -378,14 +376,6 @@ int getModelFromDt(char *line, FILE *dtFd) {
 		if (wiringPiDebug)
 			printf("piGpioLayout: %s: Hardware: %s\n", __func__, line);
 
-		model = strcasestr(line, "Bananapi");
-		if (!model) {
-			model = strcasestr(line, "Banana Pi");
-			if (!model)
-				return -1;
-		}
-
-		strcpy(line, model);
 		return 0;
 	}
 
