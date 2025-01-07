@@ -42,6 +42,7 @@
 #include "bananapim4berry.h"
 #include "bananapim4zero.h"
 #include "bananapif3.h"
+#include "bananapif5.h"
 
 // Const string define
 const char *piModelNames [16] =
@@ -57,6 +58,7 @@ const char *piModelNames [16] =
 	"BPI-M4Berry",
 	"BPI-M4Zero",
 	"k1-x deb1",
+	"BPI-F5",
 };
 
 const char *piModelNames_mainline [32] =
@@ -72,6 +74,7 @@ const char *piModelNames_mainline [32] =
 	"BananaPi M4 Berry",
 	"BananaPi M4 Zero",
 	"BananaPi BPI-F3",
+	"BananaPi BPI-F5",
 };
 
 const char *piRevisionNames [16] =
@@ -449,6 +452,11 @@ int piGpioLayout (void) {
 			case MODEL_BANANAPI_F3:
 				libwiring.maker = MAKER_SPACEMIT;
 				libwiring.mem = 5;
+				libwiring.rev = 1;
+				break;
+			case MODEL_BANANAPI_F5:
+				libwiring.maker = MAKER_ALLWINNER;
+				libwiring.mem = 4;
 				libwiring.rev = 1;
 				break;
 			case MODEL_UNKNOWN:
@@ -1172,6 +1180,9 @@ int wiringPiSetup (void)
 			break;
 		case MODEL_BANANAPI_F3:
 			init_bananapif3(&libwiring);
+			break;
+		case MODEL_BANANAPI_F5:
+			init_bananapif5(&libwiring);
 			break;
 		default:
 			return wiringPiFailure (WPI_ALMOST, "wiringPiSetup: Unknown model\n");

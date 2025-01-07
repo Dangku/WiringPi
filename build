@@ -61,7 +61,7 @@ configure_gpiomem() {
       *m5|*m2s|*cm4|*cm5io|*cm5-bpicm4io)
         $sudo cp -f udev/rules.d/99-wiringpi-amlogic.rules /etc/udev/rules.d/
         ;;
-      *m4berry|*m4zero)
+      *m4berry|*m4zero|*f5)
         $sudo cp -f udev/rules.d/99-wiringpi-sunxi.rules /etc/udev/rules.d/
         ;;
       *f3)

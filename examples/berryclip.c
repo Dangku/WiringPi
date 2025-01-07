@@ -17,7 +17,7 @@
 #define LED_D6		14
 
 #define PIN_KEY		10
-#define PIN_BEEPER	11
+#define PIN_BEEPER	7
 
 int LED[]={LED_D1, LED_D2, LED_D3, LED_D4, LED_D5, LED_D6};
 

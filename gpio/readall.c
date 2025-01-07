@@ -73,7 +73,7 @@ static const char *aml_alts [] =
 
 static const char *sunxi_alts[] =
 {
-	"IN", "OUT", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7"
+	"IN", "OUT", "ALT2", "ALT3", "ALT4", "ALT5", "ALT6", "ALT7", "ALT8", "ALT9", "ALT10", "ALT11", "ALT12", "ALT13", "INT", "DIS"
 };
 
 static const char *spacemit_alts[] =
@@ -87,7 +87,7 @@ static const char* GetAltString(int alt)
 
 	piBoardId (&model, &rev, &mem, &maker, &overVolted);
 
-	if (alt>=0 && alt<=11) {
+	if (alt>=0 && alt<=15) {
 		switch (model) {
 			case MODEL_BANANAPI_M5:
 				case MODEL_BANANAPI_M2PRO:
@@ -100,6 +100,7 @@ static const char* GetAltString(int alt)
 					break;
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
+				case MODEL_BANANAPI_F5:
 					return sunxi_alts[alt];
 					break;
 				case MODEL_BANANAPI_F3:
@@ -655,6 +656,67 @@ static const char *physNamesBananapiF3 [64] =
         NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 };
 
+static const char *physNamesBananapiF5All [64] =
+{
+        NULL,
+
+        "    3.3V", "5V      ",
+        "   SDA.5", "5V      ",
+        "   SCL.5", "GND(0V) ",
+        "GPIO.266", "TxD7    ",
+        " GND(0V)", "RxD7    ",
+        " GPIO.32", "GPIO.37 ",
+        " GPIO.33", "GND(0V) ",
+        " GPIO.34", "GPIO.43 ",
+        "    3.3V", "GPIO.44 ",
+        "    MOSI", "GND(0V) ",
+        "    MISO", "GPIO.263",
+        "    SLCK", "SS      ",
+        " GND(0V)", "GPIO.262",
+        "   SDA.4", "SCL.4   ",
+        " GPIO.35", "GND(0V) ",
+        "GPIO.356", "GPIO.267",
+        "GPIO.357", "GND(0V) ",
+        " GPIO.38", "GPIO.268",
+        " GPIO.36", "GPIO.40 ",
+        " GND(0V)", "GPIO.39 ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+static const char *physNamesBananapiF5 [64] =
+{
+        NULL,
+
+        "   3.3V", "5V     ",
+        "  SDA.5", "5V     ",
+        "  SCL.5", "0V     ",
+        " IO.266", "TxD7   ",
+        "     0V", "RxD7   ",
+        "  IO.32", "IO.37  ",
+        "  IO.33", "0V     ",
+        "  IO.34", "IO.43  ",
+        "   3.3V", "IO.44  ",
+        "   MOSI", "0V     ",
+        "   MISO", "IO.263 ",
+        "   SLCK", "SS     ",
+        "     0V", "IO.262 ",
+        "  SDA.4", "SCL.4  ",
+        "  IO.35", "0V     ",
+        " IO.356", "IO.267 ",
+        " IO.357", "0V     ",
+        "  IO.38", "IO.268 ",
+        "  IO.36", "IO.40  ",
+        "     0V", "IO.39  ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+
 static void readallPhys(int model, int UNU rev, int physPin, const char *physNames[], int isAll) {
 	int pin ;
 
@@ -707,6 +769,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
 				case MODEL_BANANAPI_F3:
+				case MODEL_BANANAPI_F5:
 					printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 					break;
 				default:
@@ -748,6 +811,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_M4BERRY:
 				case MODEL_BANANAPI_M4ZERO:
 				case MODEL_BANANAPI_F3:
+				case MODEL_BANANAPI_F5:
 					printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 					break;
 				default:
@@ -906,6 +970,10 @@ void doReadall(int argc, char *argv[]) {
 		case MODEL_BANANAPI_F3:
 			headerName = (isAll == FALSE) ? "--- F3 ---" : "--- Model  BANANAPI-F3 ---";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiF3 : physNamesBananapiF3All);
+			break;
+		case MODEL_BANANAPI_F5:
+			headerName = (isAll == FALSE) ? "--- F5 ---" : "--- Model  BANANAPI-F5 ---";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiF5 : physNamesBananapiF5All);
 			break;
 		default:
 			printf("Oops - unknown model: %d\n", model);

@@ -156,6 +156,7 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 			break;
 		case MODEL_BANANAPI_M4BERRY:
 		case MODEL_BANANAPI_M4ZERO:
+		case MODEL_BANANAPI_F5:
 			sprintf(device, "%s%d", spiDevType1, channel);
 			break;
 		default:

@@ -72,7 +72,8 @@ SRC	=	wiringPi.c						\
 		bananapicm5bpicm4io.c                                   \
 		bananapim4berry.c                                       \
 		bananapim4zero.c                                        \
-		bananapif3.c
+		bananapif3.c                                            \
+		bananapif5.c
 
 HEADERS =	$(shell ls *.h)
 
@@ -191,3 +192,4 @@ bananapicm5bpicm4io.o : wiringPi.h bananapicm5io.h
 bananapim4berry.o : wiringPi.h bananapim4berry.h
 bananapim4zero.o : wiringPi.h bananapim4zero.h
 bananapif3.o : wiringPi.h bananapif3.h
+bananapif5.o: wiringPi.h bananapif5.h

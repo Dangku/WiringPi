@@ -207,6 +207,7 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 	{
 		case MODEL_BANANAPI_M5:
 		case MODEL_BANANAPI_M2PRO:
+		case MODEL_BANANAPI_M4ZERO:
 			port = 0;
 			break;
 		case MODEL_BANANAPI_M2S:
@@ -216,14 +217,10 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 			break;
 		case MODEL_BANANAPI_CM5IO:
 		case MODEL_BANANAPI_CM5BPICM4IO:
+		case MODEL_BANANAPI_F5:
 			port = 5;
 			break;
 		case MODEL_BANANAPI_M4BERRY:
-			port = 4;
-			break;
-		case MODEL_BANANAPI_M4ZERO:
-			port = 0;
-			break;
 		case MODEL_BANANAPI_F3:
 			port = 4;
 			break;
