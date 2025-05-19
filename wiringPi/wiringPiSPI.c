@@ -40,6 +40,7 @@
 
 static const char       *spiDevType0    = "/dev/spidev0.";
 static const char       *spiDevType1    = "/dev/spidev1.";
+static const char       *spiDevType2    = "/dev/spidev2.";  
 static const char       *spiDevType3    = "/dev/spidev3.";
 
 static const uint8_t     spiBPW         = 8;
@@ -158,6 +159,9 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 		case MODEL_BANANAPI_M4ZERO:
 		case MODEL_BANANAPI_F5:
 			sprintf(device, "%s%d", spiDevType1, channel);
+			break;
+		case MODEL_BANANAPI_AI2N:
+			sprintf(device, "%s%d", spiDevType2, channel);
 			break;
 		default:
 			break;

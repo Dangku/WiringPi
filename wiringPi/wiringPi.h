@@ -55,11 +55,13 @@
 #define MODEL_BANANAPI_M4ZERO	9
 #define MODEL_BANANAPI_F3	10
 #define MODEL_BANANAPI_F5	11
+#define MODEL_BANANAPI_AI2N	12
 
 #define	MAKER_UNKNOWN		0
 #define	MAKER_AMLOGIC		1
 #define MAKER_ALLWINNER		2
 #define MAKER_SPACEMIT		3
+#define MAKER_RENESAS		4
 
 // rename wiringPi modes
 #define	MODE_PINS		0

@@ -23,6 +23,9 @@ case "$1" in
 				*f3)
 					cp -f udev/rules.d/99-wiringpi-spacemit.rules /etc/udev/rules.d/
 					;;
+				*ai2n)
+					cp -f udev/rules.d/99-wiringpi-renesas.rules /etc/udev/rules.d/
+					;;
 				*)
 					msg "This system seems not Bananapi"
 					;;

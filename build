@@ -67,6 +67,9 @@ configure_gpiomem() {
       *f3)
         $sudo cp -f udev/rules.d/99-wiringpi-spacemit.rules /etc/udev/rules.d/
         ;;
+      *ai2n)
+        $sudo cp -f udev/rules.d/99-wiringpi-renesas.rules /etc/udev/rules.d/
+        ;;
       *)
         echo "This system seems not Bananapi"
         ;;
