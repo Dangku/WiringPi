@@ -296,8 +296,9 @@ static int _getModeToGpio (int mode, int pin)
 
 static int _setDrive (int pin, int value)
 {
-	int bank, index, offset;
-	uint32_t phyaddr, mmap_seek;
+	int offset, port, port_offset, bit;
+	uint32_t iolh_phyaddr, iolh_mmap_seek;
+	uint32_t reg;
 
 	if (lib->mode == MODE_GPIO_SYS)
 		return -1;
@@ -310,15 +311,27 @@ static int _setDrive (int pin, int value)
 		return -1;
 	}
 
-	bank = pin >> 5;
-	index = pin - (bank << 5);
-	offset = ((index % 16) << 1);
+	offset = OFFSET(pin);
+	port = PIN_ID_TO_PORT_OFFSET(offset);
+	port_offset = port + EXTENDED_REG_OFFSET;
+	bit = PIN_ID_TO_PIN(offset);
 
-	phyaddr = (bank * 48) + 0x14;
-	mmap_seek = phyaddr >> 2;
+	//printf("pin=%d, offset=%d, port=0x%x, bit=%d\n", pin, offset, port, bit);
 
-	*(gpio + mmap_seek) &= ~(3 << offset);
-	*(gpio + mmap_seek) |= value;
+	iolh_phyaddr = IOLH(port_offset);
+
+	//bit[3:0], lower address = phyaddr
+	//bit[7:4], higher address = phyaddr + 4
+	if(bit >= 4) {
+		bit -= 4;
+		iolh_phyaddr += 4;
+	}
+	iolh_mmap_seek = iolh_phyaddr >> 2;
+
+	//printf("bit = %d, iolh_phyaddr = 0x%x\n", bit, iolh_phyaddr);
+
+	reg = *(gpio + iolh_mmap_seek) &= ~(3 << (bit * 8));
+	*(gpio + iolh_mmap_seek) = reg | (value << (bit * 8));
 
 	return 0;
 }
@@ -326,8 +339,8 @@ static int _setDrive (int pin, int value)
 /*----------------------------------------------------------------------------*/
 static int _getDrive (int pin)
 {
-	int bank, index, offset;
-	uint32_t phyaddr, mmap_seek;
+	int offset, port, port_offset, bit;
+	uint32_t iolh_phyaddr, iolh_mmap_seek;
 
 	if (lib->mode == MODE_GPIO_SYS)
 		return -1;
@@ -335,14 +348,26 @@ static int _getDrive (int pin)
 	if ((pin = _getModeToGpio(lib->mode, pin)) < 0)
 		return -1;
 
-	bank = pin >> 5;
-	index = pin - (bank << 5);
-	offset = ((index % 16) << 1);
+	offset = OFFSET(pin);
+	port = PIN_ID_TO_PORT_OFFSET(offset);
+	port_offset = port + EXTENDED_REG_OFFSET;
+	bit = PIN_ID_TO_PIN(offset);
 
-	phyaddr = (bank * 48) + 0x14;
-	mmap_seek = phyaddr >> 2;
+	//printf("pin=%d, offset=%d, port=0x%x, bit=%d\n", pin, offset, port, bit);
 
-	return (*(gpio + mmap_seek) >> offset) & 3;
+	iolh_phyaddr = IOLH(port_offset);
+
+	//bit[3:0], lower address = phyaddr
+	//bit[7:4], higher address = phyaddr + 4
+	if(bit >= 4) {
+		bit -= 4;
+		iolh_phyaddr += 4;
+	}
+	iolh_mmap_seek = iolh_phyaddr >> 2;
+
+	//printf("bit = %d, iolh_phyaddr = 0x%x\n", bit, iolh_phyaddr);
+
+	return (*(gpio + iolh_mmap_seek) >> (bit * 8)) & 0x3;
 }
 
 static int _pinMode (int pin, int mode)
@@ -491,8 +516,10 @@ static int _getAlt (int pin)
 
 static int _getPUPD (int pin)
 {
-	int bank, index, offset;
-	uint32_t phyaddr, mmap_seek;
+	int offset, port, port_offset, bit;
+	uint32_t pupd_phyaddr, pupd_mmap_seek;
+	uint32_t reg;
+	int bit_value;
 
 	if (lib->mode == MODE_GPIO_SYS)
 		return -1;
@@ -500,21 +527,51 @@ static int _getPUPD (int pin)
 	if ((pin = _getModeToGpio(lib->mode, pin)) < 0)
 		return -1;
 
-	bank = pin >> 5;
-	index = pin - (bank << 5);
-	offset = ((index % 16) << 1);
-	phyaddr = (bank * 48) + ((index >> 4) << 2) + 0x24;
-	mmap_seek = phyaddr >> 2;
+	offset = OFFSET(pin);
+	port = PIN_ID_TO_PORT_OFFSET(offset);
+	port_offset = port + EXTENDED_REG_OFFSET;
+	bit = PIN_ID_TO_PIN(offset);
 
-	return (*(gpio + mmap_seek) >> offset) & 3;
+	//printf("pin=%d, offset=%d, port=0x%x, bit=%d\n", pin, offset, port, bit);
+
+	pupd_phyaddr = PUPD(port_offset);
+
+	//bit[3:0], lower address = phyaddr
+	//bit[7:4], higher address = phyaddr + 4
+	if(bit >= 4) {
+		bit -= 4;
+		pupd_phyaddr += 4;
+	}
+	pupd_mmap_seek = pupd_phyaddr >> 2;
+
+	//printf("bit = %d, iolh_phyaddr = 0x%x\n", bit, pupd_phyaddr);
+
+	reg = (*(gpio + pupd_mmap_seek) >> (bit * 8)) & 0x3;
+	switch (reg) {
+		case PFC_PULL_DIS0:
+		case PFC_PULL_DIS1:
+			bit_value = 0;
+			break;
+		case PFC_PULL_UP:
+			bit_value = 1;
+			break;
+		case PFC_PULL_DOWN:
+			bit_value = 2;
+			break;
+		default:
+			break;
+	}
+
+	return bit_value;
 }
 
 static int _pullUpDnControl (int pin, int pud)
 {
 	struct wiringPiNodeStruct *node = wiringPiNodes;
-	int bank, index, offset;
-	uint32_t phyaddr, mmap_seek;
-	int bit_value = 0;
+	int offset, port, port_offset, bit;
+	uint32_t pupd_phyaddr, pupd_mmap_seek;
+	uint32_t reg;
+	int bit_value;
 	int origPin = pin;
 
 	if (lib->mode == MODE_GPIO_SYS)
@@ -527,30 +584,44 @@ static int _pullUpDnControl (int pin, int pud)
 		return 0;
 	}
 
-	bank = pin >> 5;
-	index = pin - (bank << 5);
-	offset = ((index % 16) << 1);
-	phyaddr = (bank * 48) + ((index >> 4) << 2) + 0x24;
-	mmap_seek = phyaddr >> 2;
+	offset = OFFSET(pin);
+	port = PIN_ID_TO_PORT_OFFSET(offset);
+	port_offset = port + EXTENDED_REG_OFFSET;
+	bit = PIN_ID_TO_PIN(offset);
+
+	//printf("pin=%d, offset=%d, port=0x%x, bit=%d\n", pin, offset, port, bit);
+
+	pupd_phyaddr = PUPD(port_offset);
+
+	//bit[3:0], lower address = phyaddr
+	//bit[7:4], higher address = phyaddr + 4
+	if(bit >= 4) {
+		bit -= 4;
+		pupd_phyaddr += 4;
+	}
+	pupd_mmap_seek = pupd_phyaddr >> 2;
+
+	//printf("bit = %d, iolh_phyaddr = 0x%x\n", bit, pupd_phyaddr);
 
 	/* set bit */
 	switch(pud)
 	{
 		case PUD_UP:
-			bit_value = 1;
+			bit_value = PFC_PULL_UP;
 			break;
 		case PUD_DOWN:
-			bit_value = 2;
+			bit_value = PFC_PULL_DOWN;
 			break;
 		case PUD_OFF:
-			bit_value = 0;
+			bit_value = PFC_PULL_DIS0;
 			break;
 		default:
+			bit_value = 0;
 			break;
 	}
 
-	*(gpio + mmap_seek) &= ~(3 << offset);
-	*(gpio + mmap_seek) |= (bit_value & 3) << offset;
+	reg = *(gpio + pupd_mmap_seek) &= ~(3 << (bit * 8));
+	*(gpio + pupd_mmap_seek) = reg | (bit_value << (bit * 8));
 
 	return 0;
 }

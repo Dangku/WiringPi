@@ -27,10 +27,17 @@
 #define PMC(n)                            (0x0200 + 0x10 + (n))
 #define PFC(n)                            (0x0400 + 0x40 + (n) * 4)
 #define PIN(n)                            (0x0800 + 0x10 + (n))
+#define IOLH(n)                           (0x1000 + (n) * 8)   //n=port+EXTENDED_REG_OFFSET
+#define PUPD(n)                           (0x1C00 + (n) * 8)
 
 #define PM_INPUT                          0x1
 #define PM_OUTPUT                         0x2
-#define PM_HIZ				  0x12
+#define PM_HIZ                            0x12
+
+#define PFC_PULL_DIS0                     0x0
+#define PFC_PULL_DIS1                     0x1
+#define PFC_PULL_UP                       0x3
+#define PFC_PULL_DOWN                     0x2
 
 #define AI2N_PWM_BASE                     0x02000c00
 
@@ -68,6 +75,9 @@
 #define PWM_CLK_DIV_36K                   10
 #define PWM_CLK_DIV_48K                   11
 #define PWM_CLK_DIV_72K                   12
+
+#undef BLOCK_SIZE
+#define BLOCK_SIZE                        0x2000
 
 #ifdef __cplusplus
 extern "C" {
