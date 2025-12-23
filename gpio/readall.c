@@ -112,6 +112,7 @@ static const char* GetAltString(int alt)
 				return spacemit_alts[alt];
 				break;
 			case MODEL_BANANAPI_AI2N:
+			case MODEL_BANANAPI_AI2H:
 				return renesas_alts[alt];
 				break;
 			default:
@@ -784,6 +785,67 @@ static const char *physNamesBananapiAI2N [64] =
         NULL,NULL,NULL,
 };
 
+static const char *physNamesBananapiAI2HAll [64] =
+{
+        NULL,
+
+        "    3.3V", "5V      ",
+        "   SDA.1", "5V      ",
+        "   SCL.1", "GND(0V) ",
+        "GPIO.484", "TxD2    ",
+        " GND(0V)", "RxD2    ",
+        "GPIO.488", "GPIO.426",
+        "GPIO.489", "GND(0V) ",
+        "GPIO.490", "GPIO.463",
+        "    3.3V", "GPIO.462",
+        "    MOSI", "GND(0V) ",
+        "    MISO", "GPIO.459",
+        "    SLCK", "SS      ",
+        " GND(0V)", "GPIO.502",
+        "   SDA.2", "SCL.2   ",
+        "GPIO.491", "GND(0V) ",
+        "GPIO.493", "GPIO.456",
+        "GPIO.458", "GND(0V) ",
+        "GPIO.427", "GPIO.457",
+        "GPIO.495", "GPIO.429",
+        " GND(0V)", "GPIO.420",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+static const char *physNamesBananapiAI2H [64] =
+{
+        NULL,
+
+        "   3.3V", "5V     ",
+        "  SDA.1", "5V     ",
+        "  SCL.1", "0V     ",
+        " IO.484", "TxD2   ",
+        "     0V", "RxD2   ",
+        " IO.488", "IO.426 ",
+        " IO.489", "0V     ",
+        " IO.490", "IO.463 ",
+        "   3.3V", "IO.462 ",
+        "   MOSI", "0V     ",
+        "   MISO", "IO.459 ",
+        "   SLCK", "SS     ",
+        "     0V", "IO.502 ",
+        "  SDA.2", "SCL.2  ",
+        " IO.491", "0V     ",
+        " IO.493", "IO.456 ",
+        " IO.458", "0V     ",
+        " IO.427", "IO.457 ",
+        " IO.495", "IO.429 ",
+        "     0V", "IO.420 ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+
 static void readallPhys(int model, int UNU rev, int physPin, const char *physNames[], int isAll) {
 	int pin ;
 
@@ -838,6 +900,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_F3:
 				case MODEL_BANANAPI_F5:
 				case MODEL_BANANAPI_AI2N:
+				case MODEL_BANANAPI_AI2H:
 					printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 					break;
 				default:
@@ -881,6 +944,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 				case MODEL_BANANAPI_F3:
 				case MODEL_BANANAPI_F5:
 				case MODEL_BANANAPI_AI2N:
+				case MODEL_BANANAPI_AI2H:
 					printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 					break;
 				default:
@@ -1045,8 +1109,12 @@ void doReadall(int argc, char *argv[]) {
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiF5 : physNamesBananapiF5All);
 			break;
 		case MODEL_BANANAPI_AI2N:
-			headerName = (isAll == FALSE) ? "--- AI2N ---" : "--- Model  BANANAPI-AI2N ---";
+			headerName = (isAll == FALSE) ? "-- AI2N --" : "--- Model  BANANAPI-AI2N ---";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiAI2N : physNamesBananapiAI2NAll);
+			break;
+		case MODEL_BANANAPI_AI2H:
+			headerName = (isAll == FALSE) ? "-- AI2H --" : "--- Model  BANANAPI-AI2H ---";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiAI2H : physNamesBananapiAI2HAll);
 			break;
 		default:
 			printf("Oops - unknown model: %d\n", model);

@@ -9,7 +9,8 @@ SRC	=	bananapi_m5.tex \
 		bananapi_m4zero.tex \
 		bananapi_f3.tex \
 		bananapi_f5.tex \
-		bananapi_ai2n.tex
+		bananapi_ai2n.tex \
+		bananapi_ai2h.tex
 
 ifneq ($V,1)
 Q ?= @
